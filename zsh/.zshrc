@@ -1,4 +1,4 @@
-# =============================================================================
+2# =============================================================================
 #
 #                    CONFIGURACIÓN DE ZSH EN ARCH LINUX WSL
 #
@@ -14,6 +14,9 @@ bindkey '^?' backward-kill-word
 
 # Configuración de Oh My Zsh.
 export ZSH="$HOME/.oh-my-zsh"
+
+# DESACTIVAR UPDATES DE OH MY ZSH 🚨
+zstyle ':omz:update' mode disabled  # disable automatic updates
 
 # Mi tema preferido.
 # ZSH_THEME="powerlevel10k/powerlevel10k"
