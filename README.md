@@ -100,17 +100,18 @@ dpkg        -> bajo nivel (instalar .deb locales)
 ##             Parte 2: Obtener root para habilitar sudo pacman+cambiar bash > to zsh
 
 ### Actualizar el sistema+cambiar de bash a zsh
-```pacman -Sy
-pacman -S git base-devel zsh sudo```
+```
+sudo pacman -Syu
+sudo pacman -S git base-devel zsh sudo
 
 ### Cambiar de sesion en zsh
-```chsh -s /usr/bin/zsh```
+chsh -s /usr/bin/zsh
 
 ### Establer sudo [permisos root], ejecuta
-```visudo```
+visudo
 
 #### editar sudoers, y agrega lo siguiente
-```nano /etc/sudoers
+nano /etc/sudoers
 ```
 
 ```
@@ -240,6 +241,7 @@ I use Arch, btw.
 ](https://youtu.be/H7RQYREJO98)
 
 <img width="500" height="173" alt="8fb0bcb2e75583bab55753f549eb38a6" src="https://github.com/user-attachments/assets/df6ecb56-d359-474d-8be1-bf68c48172ff" />
+
 
 
 
