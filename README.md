@@ -101,8 +101,8 @@ dpkg        -> bajo nivel (instalar .deb locales)
 
 ### Actualizar el sistema+cambiar de bash a zsh
 ```
-sudo pacman -Syu
-sudo pacman -S git base-devel zsh sudo
+pacman -Sy
+pacman -S git base-devel zsh sudo
 
 ### Cambiar de sesion en zsh
 chsh -s /usr/bin/zsh
@@ -241,6 +241,7 @@ I use Arch, btw.
 ](https://youtu.be/H7RQYREJO98)
 
 <img width="500" height="173" alt="8fb0bcb2e75583bab55753f549eb38a6" src="https://github.com/user-attachments/assets/df6ecb56-d359-474d-8be1-bf68c48172ff" />
+
 
 
 
