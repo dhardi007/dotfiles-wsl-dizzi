@@ -18,8 +18,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # DESACTIVAR UPDATES DE OH MY ZSH 🚨
 zstyle ':omz:update' mode disabled  # disable automatic updates
 
-# Mi tema preferido.
-# ZSH_THEME="powerlevel10k/powerlevel10k"
+# Mi tema preferido. ACTIVAR OH MY ZASH/ zsh
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Lista de plugins a cargar.
 plugins=(
@@ -148,4 +148,4 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 # HABILITAR OH MY POSH [trae mas temas]
 # https://ohmyposh.dev/docs/themes
-eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"
+# eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"

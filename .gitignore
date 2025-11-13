@@ -13,7 +13,7 @@ cache/
 .rustup/
 .mono/
 .cargo/
-.mozilla/
+#.mozilla/
 .steam/
 .stremio-server/
 
