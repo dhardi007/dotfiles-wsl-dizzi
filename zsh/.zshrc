@@ -42,16 +42,26 @@ source $ZSH/oh-my-zsh.sh
 
 # 📌 [Abrir nvim en windows terminal]Añade la ruta de Neovim de Windows al PATH de WSL.
 export PATH="/mnt/c/Program Files/Neovim/bin:$PATH"
-alias nvim='wt.exe -d "$(wslpath -w "$PWD")" nvim.exe'
+# alias nvim='wt.exe -d "$(wslpath -w "$PWD")" nvim.exe'
+
+function nvim() {
+  if [[ -z "$1" ]]; then
+    # Si no hay argumentos, abre nvim en el directorio actual
+    wt.exe -d "$(wslpath -w "$PWD")" nvim.exe
+  else
+    # Si hay argumentos, convierte la ruta y abre el archivo
+    wt.exe -d "$(wslpath -w "$PWD")" nvim.exe "$(wslpath -w "$1")"
+  fi
+}
 
 # 📌 [Abrir VScode]Añade la ruta de Visual Studio Code de Windows al PATH de WSL.
 # 📌 [Funciona] Depende del user que uses.
-export PATH="/mnt/c/Users/Diego.DESKTOP-0CQHRL5/AppData/Local/Programs/Microsoft VS Code:$PATH"
+export PATH="/mnt/c/Users/Diego/AppData/Local/Programs/Microsoft VS Code:$PATH"
 function code() {
   if [[ -z "$1" ]]; then
-    /mnt/c/Users/Diego.DESKTOP-0CQHRL5/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe .
+    /mnt/c/Users/Diego/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe .
   else
-    /mnt/c/Users/Diego.DESKTOP-0CQHRL5/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe "$(wslpath -w "$1")"
+    /mnt/c/Users/Diego/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe "$(wslpath -w "$1")"
   fi
 }
 
