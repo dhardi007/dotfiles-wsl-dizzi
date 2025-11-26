@@ -1,6 +1,7 @@
+# =============== 💤 🔮 🗿 In Love with arch
 
-# =============== 💤 🔮 🗿 In Love with arch 
-##   zsh > bashzzz btw~  CONFIGURACIÓN DE LINUX WSL EN WINDWOS!!! 26/08/2025 🔮 🔥 🚀
+## zsh > bashzzz btw~ CONFIGURACIÓN DE LINUX WSL EN WINDWOS!!! 26/08/2025 🔮 🔥 🚀
+
 # ───────────────────────────────────
 
                   -`                       root@classmate
@@ -33,10 +34,10 @@ zsh-syntax-highlighting 0.8.0-1
 ~ ❯                                                                     root@classmate 02:35:39
 ```
 
-
 <img width="691" height="1080" alt="![JJK  Art - 4]" src="https://github.com/user-attachments/assets/ae102d70-576c-405f-908d-03725f59476f" />
 
 ## ─❯ ⚠ 🚨 [DIFERENTE] Comandos en ARCH y DEBIAN {Diferencias}
+
 ```
 ╰─❯ Arch (pacman):
 pacman -Sy
@@ -50,8 +51,8 @@ apt install git build-essential zsh sudo
 # sino remarco [Diferente] eso significa que es {igual} el proceso de configurar wsl (tanto en debian/Arch).
 ```
 
-
 ## ─❯ ⚠ 🚨 [DIFERENTE] Gestores de Paquete en ARCH y DEBIAN {Diferencias}
+
 ```
 ╰─❯ Arch:
 pacman      -> gestor oficial (binarios de repos Arch)
@@ -70,8 +71,6 @@ dpkg        -> bajo nivel (instalar .deb locales)
           pip/pipx    -> gestor de paquetes Python (user-space, sin tocar sistema)
 ```
 
-
-
 ## ARCH-WSL ~ INSTALL RESUMEN + yay [Opcional] + Configurar usuario root, AUR [Size: 1.GB]
 
 ```
@@ -82,24 +81,32 @@ dpkg        -> bajo nivel (instalar .deb locales)
 ## 📌!!! Solucion: nvim [path completo] ej: {nvim ~/dotfiles-wsl-dizzi/zsh/.zshrc}
 ```
 
-##                      INSTALAR ARCH o DEBIAN + REVISAR DISTROS
+## INSTALAR ARCH o DEBIAN + REVISAR DISTROS
+
 ### Listar distros [desde POWERSHELL WINDOWS]
-```wsl --list --online```
+
+`wsl --list --online`
+
 ### Instalar arch
-```wsl --install --distribution Arch```
+
+`wsl --install --distribution Arch`
 
 ### O si lo prefieres.. DEBIAN
-```wsl --install --distribution Debian```
+
+`wsl --install --distribution Debian`
 
 ### Para remover un distro..
-```wsl --unregister Debian```
+
+`wsl --unregister Debian`
 
 ### Iniciar la distro por 1ra vez
-```wsl.exe -d archlinux```
 
-##             Parte 2: Obtener root para habilitar sudo pacman+cambiar bash > to zsh
+`wsl.exe -d archlinux`
+
+## Parte 2: Obtener root para habilitar sudo pacman+cambiar bash > to zsh
 
 ### Actualizar el sistema+cambiar de bash a zsh
+
 ```
 pacman -Sy
 pacman -S git base-devel zsh sudo
@@ -119,9 +126,10 @@ root ALL=(ALL) ALL
 %wheel ALL=(ALL:ALL) ALL
 ```
 
-##             Parte 3: Instalar oh-my-zash/posh + zsh plugins hermosos, divinos [sasel controla mi menteee~~]
+## Parte 3: Instalar oh-my-zash/posh + zsh plugins hermosos, divinos [sasel controla mi menteee~~]
 
 #### ~ > instalar oh-my-zash
+
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -150,9 +158,10 @@ git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.zsh/zsh-autoc
 git clone https://github.com/Aloxaf/fzf-tab.git ~/.zsh/fzf-tab
 ```
 
-##                      Parte 4: INSTALAR PAQUETES BASICOS + dotfiles-wsl-dizzi
+## Parte 4: INSTALAR PAQUETES BASICOS + dotfiles-wsl-dizzi
 
 ### ~ > Clonar tus dotfiles:
+
 ```git clone https://github.com/dizzi1222/dotfiles-wsl-dizzi
 cd dotfiles-wsl-dizzi
 
@@ -165,6 +174,7 @@ sudo pacman -S git github-cli eza fastfetch nano stow yazi nodejs fzf ripgrep tm
 ```
 
 ## ─❯ ⚠ 🚨 [DIFERENTE] en Debian y derivados..
+
 ```
 ╰─❯ En Debian:
 
@@ -173,15 +183,14 @@ sudo apt install git gh eza fastfetch nano stow yazi nodejs npm fzf ripgrep tmux
 # Algunos paquetes extras.. Esto asegura que .zshrc, alias y compilaciones no fallen.
 ```
 
-
-##                    Parte 5: Gestión de usuarios y permisos, Crear Usuario en ARCH
+## Parte 5: Gestión de usuarios y permisos, Crear Usuario en ARCH
 
 ```useradd -m -g users -G wheel diego
 passwd diego
 ```
 
-
 ## ─❯ ⚠ 🚨 [DIFERENTE] en Debian y derivados..
+
 ```
 ╰─❯ En Debian:
 
@@ -189,16 +198,15 @@ adduser diego
 usermod -aG sudo diego
 ```
 
-
-
-
 ### Salir o entrar al usuario [Necesario para la aUR {pamac, yay o paru}]
+
 ```
 su diego
 exit
 ```
 
-### [OPCIONAL] instalar yay para la AUR {200mb aprox}.. necesitas chown + Darle permisos al usuario 
+### [OPCIONAL] instalar yay para la AUR {200mb aprox}.. necesitas chown + Darle permisos al usuario
+
 ```
 # ~ > {si te  encuentras en su "diego".. sal y ve a root}
 
@@ -211,6 +219,15 @@ sudo cp -r /root/yay /home/diego
 # ~ > darles permisos de yay:
 chown -R diego:users /home/diego/yay
 
+# [󰀦 nuevo] Como usuario root (por si falla compilar yay)
+mkdir -p /home/diego/.cache
+chmod 755 /home/diego/.cache
+
+# Como root, arregla el ownership
+chown -R diego:users /home/diego/.cache
+
+# Ahora intenta compilar de nuevo
+
 su diego
 
 # ~ > Instala. y compila yay
@@ -220,8 +237,8 @@ cd ~/yay
 makepkg -si
 ```
 
-
 ## ─❯ ⚠ 🚨 [DIFERENTE] en Debian y derivados..
+
 ```
 ╰─❯ En Debian:
 directamente no es posible, es exclusivo de la AUR...
@@ -230,19 +247,14 @@ I use Arch, btw.
 ```
 
 # ───────────────────────────────────
+
 ## 💤 Debian Vs Arch 🦥
 
 <!-- <img width="337" height="198" alt="8b85d9ca2b82c8355e78ec55cc0eed37" src="https://github.com/user-attachments/assets/39a8d975-cd82-4b68-9954-e1e1f784563f" /> -->
 
 <img width="500" height="198" alt="f8819b64cfec36b8bc574f055aeacbe8" src="https://github.com/user-attachments/assets/ac37b985-489d-4801-a8ce-1fde7ef7446d" />
 
-
 [https://youtu.be/H7RQYREJO98
 ](https://youtu.be/H7RQYREJO98)
 
 <img width="500" height="173" alt="8fb0bcb2e75583bab55753f549eb38a6" src="https://github.com/user-attachments/assets/df6ecb56-d359-474d-8be1-bf68c48172ff" />
-
-
-
-
-
