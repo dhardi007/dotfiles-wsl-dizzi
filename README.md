@@ -170,7 +170,7 @@ stow .
 # ~ > si encuentras un conflicto, eliminalo {Al hacer stow} [No uses --adopt]
 
 # Zsh paquetes, gh auth etc
-sudo pacman -S git github-cli eza fastfetch nano stow yazi nodejs fzf ripgrep tmux python-pipx fd
+sudo pacman -S git github-cli eza fastfetch nano stow yazi nodejs fzf ripgrep tmux python-pipx fd neovim rsync gcc 
 ```
 
 ## ─❯ ⚠ 🚨 [DIFERENTE] en Debian y derivados..
@@ -204,6 +204,17 @@ usermod -aG sudo diego
 su diego
 exit
 ```
+## Parte 6: Configurar Neovim Nativo (Velocidad Máxima 🚀)
+
+Para evitar el lag extremo de WSL al leer desde `/mnt/c/`, NO uses enlaces simbólicos (`ln -s`). Los archivos deben ser nativos.
+
+1. Instala Neovim y rsync:
+`sudo pacman -S neovim rsync`
+
+2. Ejecuta la sincronizacion de C:\Users\Diego\AppData\Local\nvim CON:
+`~/sync-nvim.sh`:
+Y se copiara y remplazara tu config de windows sincronizada con WSL a:
+~/.config/nvim
 
 ### [OPCIONAL] instalar yay para la AUR {200mb aprox}.. necesitas chown + Darle permisos al usuario
 

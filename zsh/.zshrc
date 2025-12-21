@@ -45,19 +45,83 @@ export PATH="/mnt/c/Program Files/Neovim/bin:$PATH"
 # alias nvim='wt.exe -d "$(wslpath -w "$PWD")" nvim.exe'
 
 function nvim() {
-  if [[ -z "$1" ]]; then
-    # Si no hay argumentos, abre nvim en el directorio actual
-    wt.exe -d "$(wslpath -w "$PWD")" nvim.exe
+  # 'whence -p' busca solo binarios externos, ignorando alias y funciones
+  local LINUX_NVIM=$(PATH=$(echo "$PATH" | sed -e 's/:\/mnt\/c[^:]*//g') whence -p nvim)
+
+  if [[ -n "$LINUX_NVIM" ]]; then
+    "$LINUX_NVIM" "$@"
   else
-    # Si hay argumentos, convierte la ruta y abre el archivo
-    wt.exe -d "$(wslpath -w "$PWD")" nvim.exe "$(wslpath -w "$1")"
+    if [[ -z "$1" ]]; then
+      wt.exe -d "$(wslpath -w "$PWD")" nvim.exe
+    else
+      wt.exe -d "$(wslpath -w "$PWD")" nvim.exe "$(wslpath -w "$1")"
+    fi
+  fi
+}
+# 📌 [Abrir Antigravity o VSCode]
+# Si Antigravity está instalado, lo abre; si no, abre > Cursor > VSCode
+export PATH="/mnt/c/Users/Diego/AppData/Local/Programs/Microsoft VS Code:$PATH"
+
+function code() {
+  # Ruta al ejecutable de Antigravity
+  local ANTIGRAVITY_PATH="/mnt/c/Users/Diego/AppData/Local/Programs/Antigravity/Antigravity.exe"
+  local CURSOR_PATH="/mnt/c/Users/Diego/AppData/Local/Programs/Cursor/Cursor.exe"
+
+  # Verificar si Antigravity existe
+  if [[ -f "$ANTIGRAVITY_PATH" ]]; then
+    if [[ -z "$1" ]]; then
+      "$ANTIGRAVITY_PATH" .
+    else
+      "$ANTIGRAVITY_PATH" "$(wslpath -w "$1")"
+    fi
+  # Si no existe Antigravity, verificar si existe Cursor
+  elif [[ -f "$CURSOR_PATH" ]]; then
+    if [[ -z "$1" ]]; then
+      "$CURSOR_PATH" .
+    else
+      "$CURSOR_PATH" "$(wslpath -w "$1")"
+    fi
+  # Si no existe ninguno, usar VS Code
+  else
+    if [[ -z "$1" ]]; then
+      /mnt/c/Users/Diego/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe .
+    else
+      /mnt/c/Users/Diego/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe "$(wslpath -w "$1")"
+    fi
   fi
 }
 
-# 📌 [Abrir VScode]Añade la ruta de Visual Studio Code de Windows al PATH de WSL.
-# 📌 [Funciona] Depende del user que uses.
-export PATH="/mnt/c/Users/Diego/AppData/Local/Programs/Microsoft VS Code:$PATH"
-function code() {
+# 📌 [Comandos individuales breves]
+# 📌  Antigravity (si está instalado)
+function antigravity() {
+  local EXE="/mnt/c/Users/Diego/AppData/Local/Programs/Antigravity/Antigravity.exe"
+  if [[ -f "$EXE" ]]; then
+    if [[ -z "$1" ]]; then
+      "$EXE" .
+    else
+      "$EXE" "$(wslpath -w "$1")"
+    fi
+  else
+    echo "❌ Antigravity no está instalado"
+  fi
+}
+
+# 📌  Cursor (si está instalado)
+function cursor() {
+  local EXE="/mnt/c/Users/Diego/AppData/Local/Programs/Cursor/Cursor.exe"
+  if [[ -f "$EXE" ]]; then
+    if [[ -z "$1" ]]; then
+      "$EXE" .
+    else
+      "$EXE" "$(wslpath -w "$1")"
+    fi
+  else
+    echo "❌ Cursor no está instalado"
+  fi
+}
+
+# 📌  VS Code (siempre disponible)
+function vscode() {
   if [[ -z "$1" ]]; then
     /mnt/c/Users/Diego/AppData/Local/Programs/Microsoft\ VS\ Code/Code.exe .
   else
@@ -67,9 +131,18 @@ function code() {
 
 # 📌 Explorer.exe de windows📌
 # Abre el explorador de Windows en la ubicación actual de WSL.
-alias explorer='explorer.exe .'
-
+# Función para abrir el explorador de Windows
+function explorer() {
+    if [[ -z "$1" ]]; then
+        # Si no hay argumentos, abre la carpeta actual
+        explorer.exe .
+    else
+        # Si hay argumentos, convierte la ruta y la abre
+        explorer.exe "$(wslpath -w "$1")"
+    fi
+}
 # 📌[Photo, picasa] Función para abrir el visor de fotos de PREDETERMINADO Windows.
+# Equivalente a loupe y feh
 function picasa() {
     if [[ -z "$1" ]]; then
         explorer.exe .
@@ -159,3 +232,27 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # HABILITAR OH MY POSH [trae mas temas]
 # https://ohmyposh.dev/docs/themes
 # eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"
+
+# Agrega al final del archivo ~/.zshrc
+# Reparar problemas de codificación de caracteres. [UTF-8]
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+# Añade Composer al PATH [PHP]
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+# Configuración de Java JDK 21
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+export PATH=$JAVA_HOME/bin:$PATH
+
+# =============================================================================
+#
+# SINCRONIZAR PYWAL en WINDOWS
+#
+# =============================================================================
+
+# Only create symlink if it doesn't exist or isn't already a symlink
+# if [ ! -L ~/.cache/wal ]; then
+#     #                    [CAMBIA USER]
+#     # ln -s /mnt/c/Users/username/.cache/wal ~/.cache/wal
+#     ln -s /mnt/c/Users/Diego/.cache/wal ~/.cache/wal
+# fi
