@@ -1,0 +1,3 @@
+[submodule "nvim-wsl"]
+	path = nvim-wsl
+	url = https://github.com/dizzi1222/nvim-wsl.git

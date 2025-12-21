@@ -26,3 +26,4 @@ cache/
 *.tar.gz
 *.zip
 *.exe
+*:Zone.Identifier
