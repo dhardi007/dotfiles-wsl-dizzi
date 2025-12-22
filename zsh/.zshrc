@@ -269,5 +269,19 @@ function nvim() {
     wt.exe -d "$(wslpath -w "$PWD")" nvim.exe "$(wslpath -w "$1")"
   fi
 }
+# Para: -- ~/.config/nvim/lua/plugins/fzflua.lua
+alias cdwin='cd /mnt/c/Users/diego'
+alias cddev='cd /mnt/c/dev'
+
+# Ahora en Neovim:
+# :cd /mnt/c/Users/diego
+# :FzfLua files  # ✅ Busca en Windows desde WSL
+
+# Al final de ~/.zshrc
+# Docker desde Windows
+export PATH="/mnt/c/Program Files/Docker/Docker/resources/bin:$PATH"
+alias docker='docker.exe'
+alias docker-compose='docker-compose.exe'
+
 # Cargar colores de Pywal
 (cat ~/.cache/wal/sequences &) 2>/dev/null

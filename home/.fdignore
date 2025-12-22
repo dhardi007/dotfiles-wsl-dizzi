@@ -1,0 +1,32 @@
+no_repo/
+.git/
+node_modules/
+.cache/
+.vscode-server/
+*.log
+dist/
+build/
+.turbo/
+.next/
+target/
+# Extensiones binarias
+*.lnk
+*.dll
+*.exe
+*.so
+*.dylib
+*.bin
+*.obj
+*.o
+
+# Patrones molestos
+*%2*
+*%20*
+
+# Build artifacts
+dist/
+build/
+.turbo/
+.next/
+target/
+out/

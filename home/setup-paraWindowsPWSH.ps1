@@ -125,3 +125,34 @@ else {
 }
 
 Write-Host "`n✨ Setup Completado! Reinicia tu terminal para activar todo." -ForegroundColor $E_BLUE
+# En tu setup-paraWindowsPWSH.ps1, agrega después de línea 67:
+
+# 5.5. CREAR .fdignore GLOBAL
+Write-Host "`n📝 Creando .fdignore global..." -ForegroundColor $E_GREEN
+$FDIGNORE_CONTENT = @'
+no_repo/
+.git/
+node_modules/
+.cache/
+.vscode-server/
+*.log
+*.lnk
+*.dll
+*.exe
+*.so
+*.dylib
+*.bin
+*.obj
+*.o
+*%2*
+*%20*
+dist/
+build/
+.turbo/
+.next/
+target/
+out/
+'@
+
+$FDIGNORE_CONTENT | Out-File -FilePath "$HOME\.fdignore" -Encoding UTF8 -Force
+Write-Host "✅ .fdignore creado en: $HOME\.fdignore" -ForegroundColor $E_CYAN
