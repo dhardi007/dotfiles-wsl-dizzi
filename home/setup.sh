@@ -1,59 +1,132 @@
+
 #!/bin/bash
 
 # --- COLORES ---
 GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BLUE}🔮 Iniciando Setup Maestro Arch-WSL...${NC}"
+# --- VARIABLES ---
+WINDOWS_USER="Diego"
+WIN_HOME="/mnt/c/Users/$WINDOWS_USER"
+WIN_APPDATA="$WIN_HOME/AppData/Local"
+DOTFILES_DIR="$HOME/dotfiles-wsl-dizzi"
+WORKSPACE_DIR="/root/workspace"
 
-# 1. ACTUALIZACIÓN E INSTALACIÓN DE PAQUETES
-echo -e "${GREEN}📦 Instalando paquetes esenciales...${NC}"
-sudo pacman -Sy --noconfirm
-sudo pacman -S --noconfirm git base-devel zsh sudo neovim rsync gcc ripgrep fd eza fastfetch stow fzf github-cli win32yank
+echo -e "${BLUE}🔮 Iniciando Setup Maestro Arch-WSL (Diego Edition v3)...${NC}"
 
-# 2. CONFIGURAR OH MY ZSH
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo -e "${GREEN}🐚 Instalando Oh My Zsh...${NC}"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# 0. VERIFICAR PERMISOS
+if [[ $EUID -ne 0 ]]; then
+   echo -e "${RED}❌ Este script debe ejecutarse con sudo (para fstab y pacman)${NC}"
+   exit 1
 fi
 
-# 3. INSTALAR TEMAS Y PLUGINS
-echo -e "${GREEN}🎨 Instalando Powerlevel10k y Plugins...${NC}"
-ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+# 0.1 DETECTAR USUARIO REAL
+REAL_USER=$SUDO_USER
+if [ -z "$REAL_USER" ]; then
+    # Si se corre como root directamente, buscar el primer usuario en /home
+    REAL_USER=$(ls /home | head -n 1)
+fi
+[ -z "$REAL_USER" ] && REAL_USER="diego" # Fallback final
 
-[ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ] && git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" 2>/dev/null
-git clone https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_CUSTOM/plugins/zsh-autosuggestions" 2>/dev/null
-git clone https://github.com/zsh-users/zsh-completions.git "$ZSH_CUSTOM/plugins/zsh-completions" 2>/dev/null
-git clone https://github.com/zsh-users/zsh-history-substring-search "$ZSH_CUSTOM/plugins/zsh-history-substring-search" 2>/dev/null
-git clone https://github.com/marlonrichert/zsh-autocomplete.git ~/.zsh/zsh-autocomplete 2>/dev/null
-git clone https://github.com/Aloxaf/fzf-tab.git ~/.zsh/fzf-tab 2>/dev/null
+HOME_DIR=$(getent passwd "$REAL_USER" | cut -d: -f6)
 
-# 4. CREAR SCRIPT DE SINCRONIZACIÓN NEOVIM (0-LAG)
-echo -e "${GREEN}🚀 Configurando Sincronización Neovim...${NC}"
-cat << 'EOF' > ~/sync-nvim.sh
-#!/bin/zsh
-# Definir rutas (AJUSTA EL USUARIO SI NO ES DIEGO)
-WINDOWS_CONFIG="/mnt/c/Users/Diego/AppData/Local/nvim/"
-WSL_CONFIG="$HOME/.config/nvim/"
+echo -e "${YELLOW}👤 Usuario detectado: $REAL_USER (Home: $HOME_DIR)${NC}"
 
-mkdir -p "$WSL_CONFIG"
-echo "🔄 Sincronizando Windows -> WSL..."
-rsync -av --delete --exclude '.git' --exclude 'lazy-lock.json' --exclude 'undo' --exclude 'view' "$WINDOWS_CONFIG" "$WSL_CONFIG"
-echo "✅ Neovim listo para usar en modo nativo."
-EOF
-chmod +x ~/sync-nvim.sh
+# Función para ejecutar como el usuario real con su entorno
+run_as_user() {
+    sudo -i -u "$REAL_USER" bash -c "$1"
+}
 
-# 5. CONFIGURACIÓN FINAL .ZSHRC
-echo -e "${GREEN}📝 Añadiendo Alias y Funciones Inteligentes a .zshrc...${NC}"
-if ! grep -q "sync-nvim" ~/.zshrc; then
-cat << 'EOF' >> ~/.zshrc
+# 1. ACTUALIZACIÓN E INSTALACIÓN DE PAQUETES (PACMAN)
+echo -e "${GREEN}📦 Instalando paquetes esenciales...${NC}"
+pacman -Sy --needed --noconfirm
+pacman -S --needed --noconfirm git base-devel zsh neovim rsync gcc ripgrep fd eza fastfetch stow fzf github-cli python-pywal imagemagick python-pip expat
 
-# --- CONFIGURACIÓN AGREGADA POR SETUP AUTO ---
+# 2. INSTALACIÓN DE YAY (AUR)
+if ! run_as_user "command -v yay" &> /dev/null; then
+    echo -e "${YELLOW}🏗️ Instalando yay (AUR helper)...${NC}"
+    rm -rf /tmp/yay-bin
+    run_as_user "git clone https://aur.archlinux.org/yay-bin.git /tmp/yay-bin && cd /tmp/yay-bin && makepkg -si --noconfirm"
+fi
+
+echo -e "${GREEN}📦 Instalando paquetes AUR...${NC}"
+run_as_user "yay -S --needed --noconfirm pokemon-colorscripts-git win32yank-bin"
+
+# 3. BACKENDS PYWAL (PIP)
+echo -e "${GREEN}🎨 Instalando backends de Pywal...${NC}"
+run_as_user "pip install --user --upgrade colorz colorthief haishoku --break-system-packages"
+
+# 4. MONTAJE PERMANENTE (I: DRIVE / GDRIVE)
+echo -e "${GREEN}📂 Configurando montaje de Drive I:...${NC}"
+mkdir -p /mnt/i
+if ! grep -q "I:" /etc/fstab; then
+    echo "I: /mnt/i drvfs defaults 0 0" >> /etc/fstab
+    mount /mnt/i 2>/dev/null
+    echo -e "✅ Drive I: agregado a /etc/fstab"
+else
+    echo -e "✅ Drive I: ya está en /etc/fstab"
+fi
+
+# 5. CONFIGURAR OH MY ZSH
+if [ ! -d "$HOME_DIR/.oh-my-zsh" ]; then
+    echo -e "${GREEN}🐚 Instalando Oh My Zsh...${NC}"
+    run_as_user "sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" \"\" --unattended"
+fi
+
+# 6. INSTALAR TEMAS Y PLUGINS ZSH
+echo -e "${GREEN}✨ Configurando UI de Zsh...${NC}"
+ZSH_CUSTOM="$HOME_DIR/.oh-my-zsh/custom"
+[ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ] && run_as_user "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git '$ZSH_CUSTOM/themes/powerlevel10k'"
+run_as_user "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \"$ZSH_CUSTOM/plugins/zsh-syntax-highlighting\" 2>/dev/null"
+run_as_user "git clone https://github.com/zsh-users/zsh-autosuggestions.git \"$ZSH_CUSTOM/plugins/zsh-autosuggestions\" 2>/dev/null"
+run_as_user "git clone https://github.com/zsh-users/zsh-completions.git \"$ZSH_CUSTOM/plugins/zsh-completions\" 2>/dev/null"
+run_as_user "git clone https://github.com/zsh-users/zsh-history-substring-search \"$ZSH_CUSTOM/plugins/zsh-history-substring-search\" 2>/dev/null"
+
+# 8. POWERTOYS BACKUP
+echo -e "${GREEN}🛠️ Replicando Backup de PowerToys...${NC}"
+PT_BACKUP_DEST="$WIN_HOME/Documents/PowerToys/Backup"
+mkdir -p "$PT_BACKUP_DEST"
+
+# Buscar el archivo .ptb dinámicamente
+PT_SOURCE=$(find "$WORKSPACE_DIR/glaze-wm" -name "*.ptb" -print -quit 2>/dev/null)
+
+if [ -n "$PT_SOURCE" ] && [ -f "$PT_SOURCE" ]; then
+    cp "$PT_SOURCE" "$PT_BACKUP_DEST/"
+    echo -e "✅ Backup copiado a: $PT_BACKUP_DEST"
+else
+    echo -e "${YELLOW}⚠️ No se encontró el archivo de backup en $WORKSPACE_DIR/glaze-wm${NC}"
+fi
+
+# 9. STOW DOTFILES
+echo -e "${GREEN}🔗 Aplicando Stow a los Dotfiles...${NC}"
+cd "$DOTFILES_DIR"
+for d in */; do
+    d=${d%/}
+    if [[ "$d" != "home" && "$d" != "nvim-wsl" && "$d" != "fastfetch" && "$d" != "workspace" ]]; then
+        echo "   Mapeando $d..."
+        run_as_user "cd '$DOTFILES_DIR' && stow -R '$d'"
+    fi
+done
+cd - &>/dev/null
+
+# 10. SINCRONIZACIÓN NEOVIM INICIAL
+echo -e "${GREEN}🚀 Sincronizando Neovim a Windows AppData...${NC}"
+mkdir -p "$WIN_APPDATA/nvim"
+rsync -av --delete --exclude '.git' "$DOTFILES_DIR/nvim-wsl/" "$WIN_APPDATA/nvim/"
+
+# 11. CONFIGURACIÓN .ZSHRC
+echo -e "${GREEN}📝 Finalizando .zshrc...${NC}"
+ZSHRC="$HOME_DIR/.zshrc"
+if ! grep -q "sync-nvim" "$ZSHRC"; then
+cat << 'PS_EOF' >> "$ZSHRC"
+
+# --- AUTO-GENERATED BY SETUP ---
 alias sync-nvim='~/sync-nvim.sh'
+alias sync-wal='~/sync-wal.sh'
 
-# Fallback inteligente para nvim (Prioriza Nativo > Windows Terminal)
 function nvim() {
   local LINUX_NVIM=$(PATH=$(echo "$PATH" | sed -e 's/:\/mnt\/c[^:]*//g') whence -p nvim)
   if [[ -n "$LINUX_NVIM" ]]; then
@@ -62,7 +135,9 @@ function nvim() {
     wt.exe -d "$(wslpath -w "$PWD")" nvim.exe "$(wslpath -w "$1")"
   fi
 }
-EOF
+# Cargar colores de Pywal
+(cat ~/.cache/wal/sequences &) 2>/dev/null
+PS_EOF
 fi
 
-echo -e "${BLUE}✨ Setup Completado! Ejecuta 'source ~/.zshrc' para activar todo.${NC}"
+echo -e "${BLUE}✨ Setup Completado! Reinicia tu terminal o ejecuta 'source ~/.zshrc'.${NC}"
