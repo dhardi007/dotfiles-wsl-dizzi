@@ -285,3 +285,8 @@ alias docker-compose='docker-compose.exe'
 
 # Cargar colores de Pywal
 (cat ~/.cache/wal/sequences &) 2>/dev/null
+
+# Alias para OLLAMA IA:
+alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
+
+
