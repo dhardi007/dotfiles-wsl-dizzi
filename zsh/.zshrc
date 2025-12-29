@@ -290,3 +290,6 @@ alias docker-compose='docker-compose.exe'
 alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 
 
+# Sincronizar configs [Pywal, Nvim] ~ con Rsync
+~/sync-nvim.sh
+~/sync-wal.sh
