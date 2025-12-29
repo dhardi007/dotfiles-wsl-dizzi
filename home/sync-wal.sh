@@ -1,18 +1,21 @@
 #!/bin/bash
 # ~/sync-wal.sh
-# Sincroniza wallpaper de Windows → Pywal en WSL (con debug)
+# Sincroniza wallpaper de Windows → Pywal en WSL (OPTIMIZADO - no sincroniza si es el mismo)
+set -e
 
-set -e # Salir si hay error
-
-# Colores para output
+# Colores
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+BLUE='\033[0;34m'
+NC='\033[0m'
 
-echo -e "${YELLOW}🔍 [1/5] Leyendo wallpaper de Windows...${NC}"
+# Archivo de caché del último wallpaper procesado
+CACHE_FILE="$HOME/.cache/wal/last_wallpaper.cache"
 
-# Leer wallpaper (sin errores de PSReadLine)
+echo -e "${YELLOW}🔍 [1/6] Leyendo wallpaper de Windows...${NC}"
+
+# Leer wallpaper actual
 wallpaper=$(powershell.exe -NoProfile -NonInteractive -Command "(Get-ItemProperty 'HKCU:\Control Panel\Desktop').Wallpaper" 2>/dev/null | tr -d '\r\n')
 
 if [ -z "$wallpaper" ]; then
@@ -22,34 +25,38 @@ fi
 
 echo -e "${GREEN}✅ Windows path: $wallpaper${NC}"
 
-# Convertir ruta (CORREGIDO)
-echo -e "${YELLOW}🔍 [2/5] Convirtiendo ruta Windows → WSL...${NC}"
+# Verificar si es el mismo wallpaper que la última vez
+echo -e "${YELLOW}🔍 [2/6] Verificando si cambió el wallpaper...${NC}"
 
-# Paso 1: Reemplazar \ por /
+if [ -f "$CACHE_FILE" ]; then
+  last_wallpaper=$(cat "$CACHE_FILE")
+  if [ "$wallpaper" = "$last_wallpaper" ]; then
+    echo -e "${BLUE}⏭️  Wallpaper no ha cambiado. Omitiendo sincronización.${NC}"
+    echo -e "${GREEN}✅ Fondo actual: $(basename "$wallpaper")${NC}"
+    exit 0
+  fi
+fi
+
+echo -e "${GREEN}✅ Wallpaper cambió, procediendo...${NC}"
+
+# Convertir ruta Windows → WSL
+echo -e "${YELLOW}🔍 [3/6] Convirtiendo ruta Windows → WSL...${NC}"
 wsl_path=$(echo "$wallpaper" | sed 's/\\/\//g')
 echo -e "   Paso 1: $wsl_path"
-
-# Paso 2: Convertir I: → /mnt/i (case insensitive)
 wsl_path=$(echo "$wsl_path" | sed -E 's|^([A-Za-z]):|/mnt/\L\1|')
 echo -e "   Paso 2: $wsl_path"
-
-# Paso 3: Normalizar mayúsculas/minúsculas en la ruta
-# (WSL es case-sensitive, Windows no)
 echo -e "${GREEN}✅ WSL path: $wsl_path${NC}"
 
 # Verificar que el archivo existe
-echo -e "${YELLOW}🔍 [3/5] Verificando que la imagen existe...${NC}"
-
+echo -e "${YELLOW}🔍 [4/6] Verificando que la imagen existe...${NC}"
 if [ ! -f "$wsl_path" ]; then
   echo -e "${RED}❌ Imagen NO encontrada en: $wsl_path${NC}"
   echo ""
   echo -e "${YELLOW}🔍 Intentando encontrar la imagen...${NC}"
 
-  # Extraer nombre del archivo
   filename=$(basename "$wsl_path")
   echo "   Buscando: $filename"
 
-  # Buscar en /mnt/i (si existe)
   if [ -d "/mnt/i" ]; then
     found=$(find /mnt/i -iname "$filename" 2>/dev/null | head -n 1)
     if [ -n "$found" ]; then
@@ -70,8 +77,7 @@ fi
 echo -e "${GREEN}✅ Imagen encontrada: $wsl_path${NC}"
 
 # Ejecutar Pywal
-echo -e "${YELLOW}🔍 [4/5] Generando colores con Pywal...${NC}"
-
+echo -e "${YELLOW}🔍 [5/6] Generando colores con Pywal...${NC}"
 wal -i "$wsl_path" -n -q 2>&1
 
 if [ $? -eq 0 ]; then
@@ -81,17 +87,19 @@ else
   exit 1
 fi
 
-# Verificar que se generaron los archivos
-echo -e "${YELLOW}🔍 [5/5] Verificando archivos generados...${NC}"
-
+# Verificar archivos generados
+echo -e "${YELLOW}🔍 [6/6] Verificando archivos generados...${NC}"
 if [ -f ~/.cache/wal/colors.json ]; then
   echo -e "${GREEN}✅ colors.json generado${NC}"
 
-  # Mostrar preview de colores
+  # Guardar wallpaper actual en caché
+  mkdir -p "$(dirname "$CACHE_FILE")"
+  echo "$wallpaper" >"$CACHE_FILE"
+
   echo ""
   echo -e "${YELLOW}🎨 Colores generados:${NC}"
   if command -v jq &>/dev/null; then
-    jq -r '.colors | to_entries[] | "\(.key): \(.value)"' ~/.cache/wal/colors.json | head -8
+    cat ~/.cache/wal/colors.json | jq -C '.'
   else
     cat ~/.cache/wal/colors.json
   fi

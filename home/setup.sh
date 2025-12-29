@@ -143,3 +143,100 @@ echo -e "${BLUE}✨ Setup Completado! Reinicia tu terminal o ejecuta 'source ~/.
 # O mejor, crea symlink para mantenerlo sincronizado:
 rm -rf /mnt/c/Users/diego/.fdignore
 ln -s ~/.fdignore /mnt/c/Users/diego/.fdignore
+
+# 12. CONFIGURACIÓN COMPLETA DE POWERSHELL/WINDOWS
+echo -e "${GREEN}🪟 Configurando entorno Windows...${NC}"
+
+# Función para ejecutar comandos en Windows
+run_in_windows() {
+  local cmd="$1"
+  if command -v pwsh.exe &>/dev/null; then
+    pwsh.exe -Command "$cmd"
+  else
+    powershell.exe -Command "$cmd"
+  fi
+}
+
+# a) Configurar PowerShell Execution Policy
+echo -e "${YELLOW}   🔧 Configurando Execution Policy...${NC}"
+PS_SETUP_SCRIPT="$DOTFILES_DIR/home/setup-powershell-bypass.ps1"
+if [ -f "$PS_SETUP_SCRIPT" ]; then
+  # Copiar a Windows
+  cp "$PS_SETUP_SCRIPT" "/mnt/c/Users/$WINDOWS_USER/"
+
+  # Ejecutar
+  run_in_windows "& 'C:\\Users\\$WINDOWS_USER\\setup-powershell-bypass.ps1'"
+  echo -e "✅ Script de PowerShell ejecutado"
+else
+  echo -e "${YELLOW}⚠️  Script de PowerShell no encontrado, configurando manualmente...${NC}"
+  run_in_windows "Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force"
+  run_in_windows "$($env:LC_ALL = 'C.UTF-8')$env:LANG = 'C.UTF-8'"
+  echo -e "✅ Configuración manual aplicada"
+fi
+
+# b) Configurar Git Bash
+echo -e "${YELLOW}   🔧 Configurando Git Bash locale...${NC}"
+GIT_BASHRC="/mnt/c/Users/$WINDOWS_USER/.bashrc"
+LOCALE_FIX=$(
+  cat <<'EOF'
+# Fix Git locale warnings
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+export LC_CTYPE=C.UTF-8
+
+# Git aliases
+alias git-no-locale='LC_ALL=C.UTF-8 LANG=C.UTF-8 git'
+EOF
+)
+
+if [ -f "$GIT_BASHRC" ]; then
+  # Verificar si ya está configurado
+  if ! grep -q "LC_ALL=C.UTF-8" "$GIT_BASHRC"; then
+    echo "$LOCALE_FIX" >>"$GIT_BASHRC"
+    echo -e "✅ .bashrc de Git Bash actualizado"
+  else
+    echo -e "✅ .bashrc de Git Bash ya está configurado"
+  fi
+else
+  echo "$LOCALE_FIX" >"$GIT_BASHRC"
+  echo -e "✅ .bashrc de Git Bash creado"
+fi
+
+# c) Verificar configuración
+echo -e "${YELLOW}   🔍 Verificando configuración...${NC}"
+run_in_windows "Write-Host 'PowerShell Policy:' -NoNewline; Get-ExecutionPolicy"
+run_in_windows "Write-Host 'LC_ALL:' -NoNewline; $($env:LC_ALL"
+run_in_windows "Write-Host 'LANG:' -NoNewline)$env:LANG"
+
+# d) Crear script de verificación
+VERIFY_SCRIPT="/mnt/c/Users/$WINDOWS_USER/verify-powershell.ps1"
+cat >"$VERIFY_SCRIPT" <<'EOF'
+Write-Host "🔍 Verificación de entorno PowerShell" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
+
+# Verificar políticas
+Write-Host "`n📋 Execution Policies:" -ForegroundColor Yellow
+Get-ExecutionPolicy -List | Format-Table -AutoSize
+
+# Verificar variables de entorno
+Write-Host "`n🌍 Variables de entorno:" -ForegroundColor Yellow
+Write-Host "LC_ALL: $env:LC_ALL"
+Write-Host "LANG: $env:LANG"
+Write-Host "LC_CTYPE: $env:LC_CTYPE"
+
+# Verificar Git
+Write-Host "`n📦 Git locale test:" -ForegroundColor Yellow
+git config --global -l | findstr i18n
+
+Write-Host "`n🎯 Estado:" -ForegroundColor Cyan
+if ((Get-ExecutionPolicy) -eq "Bypass") {
+    Write-Host "✅ PowerShell configurado correctamente" -ForegroundColor Green
+} else {
+    Write-Host "❌ Aún hay problemas con Execution Policy" -ForegroundColor Red
+}
+EOF
+
+echo -e "✅ Script de verificación creado: C:\\Users\\$WINDOWS_USER\\verify-powershell.ps1"
+
+# ... el resto de tu setup.sh ...
+echo -e "${BLUE}✨ Setup Completado! Reinicia tu terminal o ejecuta 'source ~/.zshrc'.${NC}"
