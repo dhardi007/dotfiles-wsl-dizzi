@@ -193,7 +193,6 @@ if [ -f "$GIT_BASHRC" ]; then
   # Verificar si ya está configurado
   if ! grep -q "LC_ALL=C.UTF-8" "$GIT_BASHRC"; then
     echo "$LOCALE_FIX" >>"$GIT_BASHRC"
-    echo -e "✅ .bashrc de Git Bash actualizado"
   else
     echo -e "✅ .bashrc de Git Bash ya está configurado"
   fi
