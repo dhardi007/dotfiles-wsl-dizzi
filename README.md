@@ -18,13 +18,6 @@
      :osssssss/        osssso+++.          󰛿  192.168.21.211/20
     /ossssssss/        +ssssooo/-          󰁹  100% [AC Connected]
   ```
-<div align="center">
-
-
-<img width="307" height="480" alt="![JJK  Art - 4]" src="https://github.com/user-attachments/assets/ae102d70-576c-405f-908d-03725f59476f" />
-
-</div>
-
 ---
 
 ## 📋 Tabla de Contenidos
@@ -37,7 +30,12 @@
 - [Gestión de Usuarios](#-gestión-de-usuarios)
 - [Neovim Nativo](#-neovim-nativo)
 - [YAY (AUR)](#-yay-aur-opcional)
+<div align="right">
 
+
+<img width="307" height="480" alt="![JJK  Art - 4]" src="https://github.com/user-attachments/assets/ae102d70-576c-405f-908d-03725f59476f" />
+
+</div>
 ---
 
 ## ⚔️ Diferencias Arch vs Debian
@@ -391,6 +389,7 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
 
 
 
