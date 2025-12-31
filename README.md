@@ -1,9 +1,7 @@
 # 💤 Arch Linux en WSL - Guía Completa
 
 > **Configuración de Linux WSL en Windows** | Actualizado: 26/08/2025 🔮 🔥 🚀
-
-<div align="center">
-
+  ```
                   -`                       root@classmate
                  .o+`
                 `ooo/                        Arch Linux x86_64
@@ -19,6 +17,8 @@
       -osssssso.      :ssssssso.           󰋊  70.77 GiB / 73.73 GiB (96%) - 9p
      :osssssss/        osssso+++.          󰛿  192.168.21.211/20
     /ossssssss/        +ssssooo/-          󰁹  100% [AC Connected]
+  ```
+<div align="center">
 
 
 <img width="691" height="640" alt="![JJK  Art - 4]" src="https://github.com/user-attachments/assets/ae102d70-576c-405f-908d-03725f59476f" />
@@ -391,5 +391,6 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
 
 
