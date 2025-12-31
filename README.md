@@ -1,6 +1,6 @@
 > ## 💤 Arch Linux en WSL - Guía Completa
 
-> **Configuración de Linux WSL en Windows** | Actualizado: 26/08/2025 🔮 🔥 🚀
+> **Configuración de Linux WSL en Windows**
   ```
                   -`                       root@classmate
                  .o+`
@@ -390,6 +390,7 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
 
 
 
