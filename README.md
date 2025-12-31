@@ -21,7 +21,7 @@
      :osssssss/        osssso+++.          󰛿  192.168.21.211/20
     /ossssssss/        +ssssooo/-          󰁹  100% [AC Connected]
 ```
-
+https://private-user-images.githubusercontent.com/127579140/481942769-ae102d70-576c-405f-908d-03725f59476f.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjcxNjQzMDUsIm5iZiI6MTc2NzE2NDAwNSwicGF0aCI6Ii8xMjc1NzkxNDAvNDgxOTQyNzY5LWFlMTAyZDcwLTU3NmMtNDA1Zi05MDhkLTAzNzI1ZjU5NDc2Zi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUxMjMxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MTIzMVQwNjUzMjVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT01ODJkN2UwNGYyZjk2NzY2ZTE1NzEzYWRhOGQzMDk2ZTIyNmI4MmFiMmQ5MmE5MWMxMmRmMzc0NGQ0NTU3MjNhJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.VjF7x79Ym4xB_F4kNWAW3pqwcdwFaeNh4JS_G1JOb7M
 </div>
 
 ---
@@ -390,3 +390,4 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
