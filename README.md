@@ -1,4 +1,4 @@
-> ## 💤 Arch Linux en WSL - Guía Completa
+> # 💤 Arch Linux en WSL - Guía Completa
 
 > **Configuración de Linux WSL en Windows**
   ```
@@ -390,6 +390,7 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
 
 
 
