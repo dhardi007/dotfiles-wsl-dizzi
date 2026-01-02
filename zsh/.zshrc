@@ -293,11 +293,54 @@ alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
 ~/sync-nvim.sh
 ~/sync-wal.sh
-# Configuración de aicommits con Ollama [opencommit] ~ coc
-alias aicommit='oco'                         # Commit con IA
-alias aiconfig='oco config get'              # Ver config
-alias aikey='oco config set OCO_API_KEY'     # Configurar key
-alias aimodel='oco config set OCO_MODEL'     # Cambiar modelo
-alias aigit='git add . && oco'               # Add + commit
-alias aipush='git add . && oco && git push'  # Add + commit + push
+
 export PATH="$HOME/.npm-global/bin:$PATH"
+
+# ═══════════════════════════════════════════════════════════
+# Configuración de opencommit (oco) con Ollama ~ [opencommit]
+# ═══════════════════════════════════════════════════════════
+alias aicommit='oco'
+
+# Comando para reconfigurar opencommit fácilmente
+# Función dinámica para configurar opencommit
+aicommitconfig() {
+  echo "📦 Modelos disponibles en Ollama:"
+  echo ""
+  
+  local models=($(ollama list | tail -n +2 | awk '{print $1}'))
+  
+  if [[ ${#models[@]} -eq 0 ]]; then
+    echo "❌ No hay modelos. Ejecuta 'ollama pull <modelo>'"
+    return 1
+  fi
+  
+  echo "Selecciona un modelo:"
+  select model in "${models[@]}" "❌ Cancelar"; do
+    if [[ "$model" == "❌ Cancelar" ]] || [[ -z "$model" ]]; then
+      echo "Operación cancelada"
+      return 0
+    fi
+    
+    if [[ -n "$model" ]]; then
+      # Configuración base
+      oco config set OCO_MODEL="$model"
+      oco config set OCO_LANGUAGE=es_ES
+      
+      # Optimizaciones para commits grandes
+      oco config set OCO_TOKENS_MAX_INPUT=12000    # Aumentar entrada
+      oco config set OCO_TOKENS_MAX_OUTPUT=500     # Limitar salida
+      oco config set OCO_ONE_LINE_COMMIT=false     # Commits descriptivos
+      
+      echo ""
+      echo "✅ opencommit configurado:"
+      echo "   • Modelo: $model"
+      echo "   • Idioma: es_ES"
+      echo "   • Max tokens entrada: 12000"
+      echo "   • Max tokens salida: 500"
+      break
+    fi
+  done
+}
+
+# Alias adicionales útiles
+alias aicommitreset='oco config reset'  # Resetear configuración
