@@ -168,6 +168,7 @@ function notepad() {
 
 # Añade el directorio global de npm al PATH.
 export PATH=~/.npm-global/bin:$PATH
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 # Integración con la terminal Ghostty.
 if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
@@ -289,13 +290,6 @@ alias docker-compose='docker-compose.exe'
 # Alias para OLLAMA IA:
 alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 
-
-# Sincronizar configs [Pywal, Nvim] ~ con Rsync
-~/sync-nvim.sh
-~/sync-wal.sh
-
-export PATH="$HOME/.npm-global/bin:$PATH"
-
 # ═══════════════════════════════════════════════════════════
 # Configuración de opencommit (oco) con Ollama ~ [opencommit]
 # ═══════════════════════════════════════════════════════════
@@ -304,17 +298,26 @@ alias aicommit='oco'
 # Comando para reconfigurar opencommit fácilmente
 # Función dinámica para configurar opencommit
 aicommitconfig() {
-  echo "📦 Modelos disponibles en Ollama:"
+  echo "📦 Configurando opencommit con Ollama..."
+  echo ""
+  
+  # Verificar que Ollama esté corriendo
+  if ! curl -s http://localhost:11434/api/tags &>/dev/null; then
+    echo "❌ Ollama no está corriendo. Ejecuta: ollama serve"
+    return 1
+  fi
+  
+  echo "✅ Ollama detectado en http://localhost:11434"
   echo ""
   
   local models=($(ollama list | tail -n +2 | awk '{print $1}'))
   
   if [[ ${#models[@]} -eq 0 ]]; then
-    echo "❌ No hay modelos. Ejecuta 'ollama pull <modelo>'"
+    echo "❌ No hay modelos. Ejecuta 'ollama pull qwen2.5:0.5b'"
     return 1
   fi
   
-  echo "Selecciona un modelo:"
+  echo "Modelos disponibles:"
   select model in "${models[@]}" "❌ Cancelar"; do
     if [[ "$model" == "❌ Cancelar" ]] || [[ -z "$model" ]]; then
       echo "Operación cancelada"
@@ -322,25 +325,47 @@ aicommitconfig() {
     fi
     
     if [[ -n "$model" ]]; then
-      # Configuración base
-      oco config set OCO_MODEL="$model"
+      # Configuración completa con URL de Ollama
+      oco config set OCO_AI_PROVIDER=ollama
+      oco config set OCO_MODEL="$model" # ← MODELO, recomendacion: Usa modelos Cloud para commits >>> Local
+      oco config set OCO_OLLAMA_API_URL=http://localhost:11434  # ← CLAVE
       oco config set OCO_LANGUAGE=es_ES
-      
-      # Optimizaciones para commits grandes
-      oco config set OCO_TOKENS_MAX_INPUT=12000    # Aumentar entrada
-      oco config set OCO_TOKENS_MAX_OUTPUT=500     # Limitar salida
-      oco config set OCO_ONE_LINE_COMMIT=false     # Commits descriptivos
+      oco config set OCO_TOKENS_MAX_INPUT=12000
+      oco config set OCO_TOKENS_MAX_OUTPUT=500
+      oco config set OCO_ONE_LINE_COMMIT=false
       
       echo ""
-      echo "✅ opencommit configurado:"
+      echo "✅ opencommit configurado correctamente:"
+      echo "   • Provider: ollama"
+      echo "   • URL: http://localhost:11434"
       echo "   • Modelo: $model"
       echo "   • Idioma: es_ES"
       echo "   • Max tokens entrada: 12000"
       echo "   • Max tokens salida: 500"
+      echo "   • Recomendacion: Usa modelos Cloud, consume 0 GPU y 1.5GB de RAM, Para commits es PERFECTO que >>> Local"
+      echo ""
+      echo "🧪 Probando conexión..."
+      
+      # Test rápido
+      if oco --version &>/dev/null; then
+        echo "✅ opencommit funcional"
+      fi
+      
       break
     fi
   done
 }
 
+# Mostrar modelo actual
+alias aicommit-showmodel='oco config get OCO_MODEL'
+
 # Alias adicionales útiles
 alias aicommitreset='oco config reset'  # Resetear configuración
+alias olist='ollama list'  # Listar modelos disponibles
+
+# ═══════════════════════════════════════════════════════════
+# Sincronizar configs [Pywal, Nvim] ~ con Rsync
+# ═══════════════════════════════════════════════════════════
+
+~/sync-nvim.sh
+~/sync-wal.sh
