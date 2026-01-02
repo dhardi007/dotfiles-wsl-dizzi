@@ -293,3 +293,11 @@ alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
 ~/sync-nvim.sh
 ~/sync-wal.sh
+# Configuración de aicommits con Ollama [opencommit] ~ coc
+alias aicommit='oco'                         # Commit con IA
+alias aiconfig='oco config get'              # Ver config
+alias aikey='oco config set OCO_API_KEY'     # Configurar key
+alias aimodel='oco config set OCO_MODEL'     # Cambiar modelo
+alias aigit='git add . && oco'               # Add + commit
+alias aipush='git add . && oco && git push'  # Add + commit + push
+export PATH="$HOME/.npm-global/bin:$PATH"
