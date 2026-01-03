@@ -361,7 +361,15 @@ alias aicommit-showmodel='oco config get OCO_MODEL'
 
 # Alias adicionales útiles
 alias aicommitreset='oco config reset'  # Resetear configuración
-alias olist='ollama list'  # Listar modelos disponibles
+alias modellist='ollama list'  # Listar modelos disponibles
+
+# [eza] Buscar archivos, alternativas a ll y ls -a
+# 'll -a' # Listar enlaces y carpetas en el directorio actual
+# 'll -aT' # Listar carpetas y enlaces del home
+# 'll -l' # Listar enlaces en el directorio actual
+alias EspacioTotal='dust /*' # Tamaño de los archivos en el directorio actual
+alias CommitsHistorial='git rebase -i HEAD~5' # Abrir commits en el último 10 commits [apartir del 5]
+alias CommitEditar='git commit --amend' # Editar commit del status actual
 
 # ═══════════════════════════════════════════════════════════
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
