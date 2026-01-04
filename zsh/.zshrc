@@ -1,4 +1,4 @@
-# =============================================================================
+2# =============================================================================
 #
 #                    CONFIGURACIÓN DE ZSH EN ARCH LINUX WSL
 #
@@ -368,9 +368,377 @@ alias modellist='ollama list'  # Listar modelos disponibles
 # 'll -aT' # Listar carpetas y enlaces del home
 # 'll -l' # Listar enlaces en el directorio actual
 alias EspacioTotal='dust /*' # Tamaño de los archivos en el directorio actual
-alias CommitsHistorial='git rebase -i HEAD~5' # Abrir commits en el último 10 commits [apartir del 5]
-alias CommitEditar='git commit --amend' # Editar commit del status actual
+# =============================================================================
+#                    GIT ALIASES Y FUNCIONES MEJORADAS
+# =============================================================================
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📦 COMMITS RÁPIDOS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Versión 1: Commit con plantilla personalizable
+gitcommit() {
+  # Archivo de plantilla en ~/.config/git/commit-template.txt
+  local template_file="$HOME/commit-template.txt"
+
+  # Crear plantilla por defecto si no existe
+  if [ ! -f "$template_file" ]; then
+    mkdir -p "$HOME/.config/git"
+    cat > "$template_file" << 'TEMPLATE'
+feat(arch 󰣇): 󰊢 Best Linux 🐧 Setup
+
+# Agrega contexto adicional aquí:
+# -
+# -
+# -
+
+# Recuerda usar 'gitflow' para commits más complejos
+TEMPLATE
+    echo "✅ Plantilla creada en: $template_file"
+  fi
+
+  # Abrir editor con la plantilla
+  git add .
+  git commit -t "$template_file"
+
+  # Preguntar si pushear
+  echo -n "¿Pushear cambios? (y/n): "
+  read push_answer
+  if [[ "$push_answer" == "y" || "$push_answer" == "Y" ]]; then
+    git push
+    echo "✅ Cambios pusheados"
+  else
+    echo "⚠️ Commit realizado sin push"
+  fi
+}
+
+# Versión 1b: Commit rápido sin abrir editor (usa plantilla inline)
+gitquick() {
+  local default_msg="feat(arch 󰣇): 󰊢 Best Linux 🐧 Setup"
+
+  if [ $# -gt 0 ]; then
+    # Si pasas argumento, úsalo como contexto adicional
+    git add . && git commit -m "$default_msg
+
+- $*" && git push
+  else
+    git add . && git commit -m "$default_msg" && git push
+  fi
+
+  echo "✅ Commit rápido realizado"
+}
+
+# Versión 2: Commit con AI LOCAL (sin cloud models)
+gitai() {
+  # Verificar que existe qwen2.5:0.5b (modelo local)
+  if ! ollama list | grep -q "qwen2.5:0.5b"; then
+    echo "❌ Modelo local no encontrado. Descargando qwen2.5:0.5b..."
+    ollama pull qwen2.5:0.5b
+  fi
+
+  # Configurar temporalmente para usar modelo local
+  local current_model=$(oco config get OCO_MODEL 2>/dev/null || echo "")
+
+  # Si está usando un modelo cloud, cambiar temporalmente a local
+  if [[ "$current_model" == *"cloud"* ]]; then
+    echo "⚠️ Detectado modelo cloud, cambiando temporalmente a qwen2.5:0.5b"
+    oco config set OCO_MODEL=qwen2.5:0.5b
+  fi
+
+  git add . && oco
+
+  # Preguntar si pushear
+  echo -n "¿Pushear cambios? (y/n): "
+  read push_answer
+  if [[ "$push_answer" == "y" || "$push_answer" == "Y" ]]; then
+    git push
+    echo "✅ Cambios pusheados"
+  fi
+}
+
+# Versión 3: Función interactiva (mensaje personalizado)
+gitc() {
+  if [ $# -eq 0 ]; then
+    echo "💬 Escribe tu mensaje de commit:"
+    read commit_msg
+  else
+    commit_msg="$*"
+  fi
+
+  git add .
+  git commit -m "$commit_msg"
+  git push
+
+  echo "✅ Cambios pusheados con mensaje: $commit_msg"
+}
+
+# Versión 4: Commit con tipo y scope (Conventional Commits)
+gitconv() {
+  local type scope msg
+
+  echo "📝 Tipo de commit (feat/fix/docs/style/refactor/test/chore):"
+  read type
+
+  echo "📦 Scope (opcional, ej: hyprland, waybar, scripts):"
+  read scope
+
+  echo "💬 Mensaje del commit:"
+  read msg
+
+  if [ -n "$scope" ]; then
+    full_msg="${type}(${scope}): ${msg}"
+  else
+    full_msg="${type}: ${msg}"
+  fi
+
+  git add .
+  git commit -m "$full_msg"
+  git push
+
+  echo "✅ Commit: $full_msg"
+}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔍 GIT UTILITIES
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Ver historial de commits (visual)
+alias gitlog='git log --oneline --graph --decorate --all'
+alias gitlogfull='git log --graph --pretty=format:"%Cred%h%Creset - %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit'
+
+# Ver diferencias antes de commit
+alias gitdiff='git diff'
+alias gitdiffs='git diff --staged'
+
+# Status con formato limpio
+alias gits='git status -sb'
+
+# Deshacer último commit (mantiene cambios)
+alias gitundo='git reset --soft HEAD~1'
+
+# Deshacer último commit (borra cambios)
+alias gitundobard='git reset --hard HEAD~1'
+
+# Editar commits históricos (últimos 5)
+alias CommitsHistorial='git rebase -i HEAD~5'
+
+# Editar el último commit
+alias CommitEditar='git commit --amend'
+
+# Stash rápido
+alias gitstash='git stash'
+alias gitstashpop='git stash pop'
+alias gitstashlist='git stash list'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🔄 BRANCHING
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Ver branches
+alias gitb='git branch -a'
+
+# Crear y cambiar a nueva branch
+gitnew() {
+  if [ $# -eq 0 ]; then
+    echo "❌ Uso: gitnew <nombre-de-branch>"
+  else
+    git checkout -b "$1"
+    echo "✅ Branch '$1' creada y activa"
+  fi
+}
+
+# Cambiar de branch
+alias gitco='git checkout'
+
+# Mergear branch
+gitmerge() {
+  if [ $# -eq 0 ]; then
+    echo "❌ Uso: gitmerge <branch-a-mergear>"
+  else
+    git merge "$1"
+    echo "✅ Branch '$1' mergeada"
+  fi
+}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🚀 PUSH/PULL MEJORADOS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Push forzado (con cuidado)
+alias gitpushforce='git push --force-with-lease'
+
+# Pull con rebase (más limpio)
+alias gitpull='git pull --rebase'
+
+# Sincronizar fork con upstream
+gitsync() {
+  git fetch upstream
+  git checkout main
+  git merge upstream/main
+  git push
+  echo "✅ Fork sincronizado con upstream"
+}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🧹 LIMPIEZA
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Limpiar branches mergeadas
+alias gitclean='git branch --merged | grep -v "\*" | xargs -n 1 git branch -d'
+
+# Limpiar archivos no trackeados
+alias gitcleanfiles='git clean -fd'
+
+# Reset completo al último commit
+alias gitreset='git reset --hard HEAD'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 📊 ESTADÍSTICAS
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Ver contribuciones por autor
+alias gitstats='git shortlog -sn --all'
+
+alias gitshowcom='tig'
+
+# Ver tamaño del repo
+alias gitsize='git count-objects -vH'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 🎯 FUNCIÓN COMPLETA TODO-EN-UNO
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Workflow completo con menú interactivo
+gitflow() {
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "     🚀 GIT WORKFLOW INTERACTIVO"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "1. 📝 Commit con plantilla (abre editor)"
+  echo "2. ⚡ Commit rápido (sin editor)"
+  echo "3. 🤖 Commit con AI LOCAL (opencommit)"
+  echo "4. 📦 Commit convencional (feat/fix/etc)"
+  echo "5. 🔍 Ver status"
+  echo "6. 📊 Ver log"
+  echo "7. 📄 Editar plantilla de commit"
+  echo "8. 📦 Revisar archivos historial de git"
+  echo "9. ❌ Cancelar"
+  echo ""
+  echo -n "Elige opción: "
+  read option
+
+  case $option in
+    1)
+      gitcommit
+      ;;
+    2)
+      echo "💬 Contexto adicional (opcional, Enter para saltar):"
+      read context
+      if [ -n "$context" ]; then
+        gitquick "$context"
+      else
+        gitquick
+      fi
+      ;;
+    3)
+      gitai
+      ;;
+    4)
+      gitconv
+      ;;
+    5)
+      git status -sb
+      ;;
+    6)
+      git log --oneline --graph --decorate --all -10
+      ;;
+    7)
+      local template_file="$HOME/commit-template.txt"
+      if [ ! -f "$template_file" ]; then
+        mkdir -p "$HOME/.config/git"
+        cat > "$template_file" << 'TEMPLATE'
+feat(arch 󰣇): 󰊢 Best Linux 🐧 Setup
+
+# Agrega contexto adicional aquí:
+# -
+# -
+# -
+
+# Recuerda usar 'gitflow' para commits más complejos
+TEMPLATE
+      fi
+      ${EDITOR:-nano} "$template_file"
+      echo "✅ Plantilla actualizada"
+      ;;
+    8)
+      tig
+      ;;
+      #
+    9)
+      echo "❌ Cancelado"
+      ;;
+    *)
+      echo "❌ Opción inválida"
+      ;;
+  esac
+}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 💡 AYUDA
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+githelp() {
+  cat << 'EOF'
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    🎯 GIT ALIASES - GUÍA RÁPIDA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 COMMITS:
+  gitcommit          → Commit rápido con mensaje por defecto
+  gitai              → Commit con AI (opencommit/oco)
+  gitc "mensaje"     → Commit con mensaje personalizado
+  gitconv            → Commit convencional interactivo
+  gitflow            → Menú interactivo completo
+  gitig              → Revisar archivos historial de git
+
+🔍 VISUALIZACIÓN:
+  gits               → Status compacto
+  gitlog             → Log visual con graph
+  gitlogfull         → Log detallado con colores
+  gitdiff            → Ver cambios sin stagear
+  gitdiffs           → Ver cambios staged
+
+⏪ DESHACER:
+  gitundo            → Deshacer último commit (mantiene cambios)
+  gitundobard        → Deshacer último commit (BORRA cambios)
+  CommitEditar       → Editar mensaje del último commit
+  CommitsHistorial   → Editar últimos 5 commits
+
+🌿 BRANCHES:
+  gitb               → Listar todas las branches
+  gitnew <nombre>    → Crear y cambiar a nueva branch
+  gitco <branch>     → Cambiar de branch
+  gitmerge <branch>  → Mergear branch
+
+🚀 PUSH/PULL:
+  gitpush            → Push normal (git push)
+  gitpushforce       → Push forzado (con --force-with-lease)
+  gitpull            → Pull con rebase
+  gitsync            → Sincronizar fork con upstream
+
+🧹 LIMPIEZA:
+  gitclean           → Eliminar branches mergeadas
+  gitcleanfiles      → Eliminar archivos no trackeados
+  gitreset           → Reset completo al último commit
+
+📊 ESTADÍSTICAS:
+  gitstats           → Ver contribuciones por autor
+  gitsize            → Ver tamaño del repositorio
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+}
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ═══════════════════════════════════════════════════════════
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
 # ═══════════════════════════════════════════════════════════
