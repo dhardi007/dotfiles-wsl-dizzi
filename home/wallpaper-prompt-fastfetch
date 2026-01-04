@@ -22,7 +22,7 @@ case "$RANDOM_MODE" in
         fi
         ;;
     "arch")
-        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/home/fastfetch-presets/arch.jsonc"
+        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/fastfetch/.config/fastfetch/fastfetch-presets/arch.jsonc"
         if [[ -f "$CONFIG_PATH" ]]; then
              fastfetch --config "$CONFIG_PATH"
         else
@@ -30,7 +30,7 @@ case "$RANDOM_MODE" in
         fi
         ;;
     "hyprland")
-        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/home/fastfetch-presets/hypr.jsonc"
+        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/fastfetch/.config/fastfetch/fastfetch-presets/hypr.jsonc"
          if [[ -f "$CONFIG_PATH" ]]; then
              fastfetch --config "$CONFIG_PATH"
         else
@@ -38,7 +38,7 @@ case "$RANDOM_MODE" in
         fi
         ;;
     "groups")
-        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/home/fastfetch-presets/groups.jsonc"
+        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/fastfetch/.config/fastfetch/fastfetch-presets/groups.jsonc"
         if [[ -f "$CONFIG_PATH" ]]; then
              # Override logo in the config to use the current wallpaper if available, or keep config default
              if [[ -n "$WALLPAPER_PATH" ]] && [[ -f "$WALLPAPER_PATH" ]]; then
@@ -51,7 +51,7 @@ case "$RANDOM_MODE" in
         fi
         ;;
     "minimal")
-        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/home/fastfetch-presets/minimal.jsonc"
+        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/fastfetch/.config/fastfetch/fastfetch-presets/minimal.jsonc"
         if [[ -f "$CONFIG_PATH" ]]; then
              fastfetch --config "$CONFIG_PATH"
         else
@@ -59,7 +59,7 @@ case "$RANDOM_MODE" in
         fi
         ;;
     "config")
-        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/home/fastfetch-presets/config.jsonc"
+        CONFIG_PATH="$HOME/dotfiles-wsl-dizzi/fastfetch/.config/fastfetch/fastfetch-presets/config.jsonc"
         if [[ -f "$CONFIG_PATH" ]]; then
              fastfetch --config "$CONFIG_PATH"
         else
