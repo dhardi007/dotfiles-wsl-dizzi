@@ -214,7 +214,8 @@ rm -f /tmp/history
 alias history='fc -l 1 > /tmp/history && cat /tmp/history'
 
 # Carga de un programa al iniciar la terminal (opcional).
-fastfetch
+# fastfetch con wallpaper actual
+$HOME/dotfiles-wsl-dizzi/home/wallpaper-prompt
 
 
 # =============================================================================
