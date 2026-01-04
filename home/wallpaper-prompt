@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Get current wallpaper path from swww
+# Extract everything after "image: " (taking the first monitor found)
+WALLPAPER_PATH=$(swww query 2>/dev/null | grep 'image:' | head -n 1 | sed 's/.*image: //')
+
+# Define available modes
+# Added more presets and logo variants
+MODES=("wallpaper" "arch" "hyprland" "groups" "minimal" "config" "archcraft" "archcraft2" "anarchy" "hypros")
+
+# Select a random mode
+RANDOM_MODE=${MODES[$RANDOM % ${#MODES[@]}]}
+
+case "$RANDOM_MODE" in
+    "wallpaper")
+        if [[ -n "$WALLPAPER_PATH" ]] && [[ -f "$WALLPAPER_PATH" ]]; then
+            # Display wallpaper using fastfetch with chafa
+            fastfetch --logo "$WALLPAPER_PATH" --logo-width 80 --logo-padding-top 1 --logo-type chafa
+        else
+            # Fallback if no wallpaper found
+            fastfetch
+        fi
+        ;;
+    "arch")
+        CONFIG_PATH="$HOME/dotfiles-dizzi/home/fastfetch-presets/arch.jsonc"
+        if [[ -f "$CONFIG_PATH" ]]; then
+             fastfetch --config "$CONFIG_PATH"
+        else
+             fastfetch --logo-type builtin --logo arch
+        fi
+        ;;
+    "hyprland")
+        CONFIG_PATH="$HOME/dotfiles-dizzi/home/fastfetch-presets/hypr.jsonc"
+         if [[ -f "$CONFIG_PATH" ]]; then
+             fastfetch --config "$CONFIG_PATH"
+        else
+            fastfetch --logo-type builtin --logo hyprland 2>/dev/null || fastfetch --logo-type builtin --logo linux
+        fi
+        ;;
+    "groups")
+        CONFIG_PATH="$HOME/dotfiles-dizzi/home/fastfetch-presets/groups.jsonc"
+        if [[ -f "$CONFIG_PATH" ]]; then
+             # Override logo in the config to use the current wallpaper if available, or keep config default
+             if [[ -n "$WALLPAPER_PATH" ]] && [[ -f "$WALLPAPER_PATH" ]]; then
+                  fastfetch --config "$CONFIG_PATH" --logo "$WALLPAPER_PATH" --logo-width 80
+             else
+                  fastfetch --config "$CONFIG_PATH"
+             fi
+        else
+            fastfetch
+        fi
+        ;;
+    "minimal")
+        CONFIG_PATH="$HOME/dotfiles-dizzi/home/fastfetch-presets/minimal.jsonc"
+        if [[ -f "$CONFIG_PATH" ]]; then
+             fastfetch --config "$CONFIG_PATH"
+        else
+             fastfetch --config minimal
+        fi
+        ;;
+    "config")
+        CONFIG_PATH="$HOME/dotfiles-dizzi/home/fastfetch-presets/config.jsonc"
+        if [[ -f "$CONFIG_PATH" ]]; then
+             fastfetch --config "$CONFIG_PATH"
+        else
+             fastfetch
+        fi
+        ;;
+    "archcraft"|"archcraft2"|"anarchy"|"hypros")
+        # Use builtin logos for these specific variants
+        fastfetch --logo-type builtin --logo "$RANDOM_MODE"
+        ;;
+    *)
+        fastfetch
+        ;;
+esac
