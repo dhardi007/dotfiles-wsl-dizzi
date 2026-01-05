@@ -5,6 +5,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 # --- VARIABLES ---
@@ -92,6 +93,31 @@ chown -R "$REAL_USER:$USER_GROUP" "$HOME_DIR/.cache"
 chown -R "$REAL_USER:$USER_GROUP" "$HOME_DIR/.npm" 2>/dev/null || true
 chown -R "$REAL_USER:$USER_GROUP" "$HOME_DIR/.npm-global" 2>/dev/null || true
 
+# ═══ NUEVO: Permisos para scripts en dotfiles ═══
+if [ -d "$DOTFILES_DIR" ]; then
+  echo -e "${YELLOW}   Arreglando permisos de scripts...${NC}"
+
+  # Wallpaper script
+  if [ -f "$DOTFILES_DIR/home/wallpaper-prompt-fastfetch" ]; then
+    chmod +x "$DOTFILES_DIR/home/wallpaper-prompt-fastfetch"
+    chown "$REAL_USER:$USER_GROUP" "$DOTFILES_DIR/home/wallpaper-prompt-fastfetch"
+    echo -e "   ✓ wallpaper-prompt-fastfetch ejecutable"
+  fi
+
+  # Sync scripts si existen
+  for script in sync-nvim.sh sync-wal.sh; do
+    if [ -f "$DOTFILES_DIR/home/$script" ]; then
+      chmod +x "$DOTFILES_DIR/home/$script"
+      chown "$REAL_USER:$USER_GROUP" "$DOTFILES_DIR/home/$script"
+      echo -e "   ✓ $script ejecutable"
+    fi
+  done
+
+  # Todos los .sh en home
+  find "$DOTFILES_DIR/home" -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+  find "$DOTFILES_DIR/home" -type f -name "*.sh" -exec chown "$REAL_USER:$USER_GROUP" {} \; 2>/dev/null || true
+fi
+
 echo -e "✅ Permisos corregidos"
 
 # ═══════════════════════════════════════════════════════════
@@ -154,7 +180,7 @@ echo -e "${GREEN}🔧 Configurando npm global...${NC}"
 run_as_user "npm config set prefix \"\$HOME/.npm-global\""
 
 # Agregar PATH a shell configs si no existe
-for rc in ~/.zshrc ~/.bashrc; do
+for rc in .zshrc .bashrc; do
   if [ -f "$HOME_DIR/$rc" ]; then
     if ! grep -q ".npm-global/bin" "$HOME_DIR/$rc"; then
       echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >>"$HOME_DIR/$rc"
@@ -279,6 +305,19 @@ if [ -d "$DOTFILES_DIR" ]; then
       run_as_user "cd '$DOTFILES_DIR' && stow -R '$d' 2>/dev/null || true"
     fi
   done
+
+  # Mapear archivos específicos de home/ manualmente
+  echo "   Mapeando scripts de home/..."
+  if [ -d "$DOTFILES_DIR/home" ]; then
+    for file in "$DOTFILES_DIR/home"/*; do
+      if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        ln -sf "$file" "$HOME_DIR/$filename" 2>/dev/null || true
+        chown -h "$REAL_USER:$USER_GROUP" "$HOME_DIR/$filename" 2>/dev/null || true
+      fi
+    done
+  fi
+
   cd - &>/dev/null
   echo -e "${GREEN}✅ Dotfiles aplicados${NC}"
 else

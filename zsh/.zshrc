@@ -745,3 +745,10 @@ EOF
 
 ~/sync-nvim.sh
 ~/sync-wal.sh
+
+# ═══════════════════════════════════════════════════════════
+# Editor por defecto (Git, etc)
+# ═══════════════════════════════════════════════════════════
+export EDITOR="nvim"
+export VISUAL="nvim"
+export GIT_EDITOR="nvim"
