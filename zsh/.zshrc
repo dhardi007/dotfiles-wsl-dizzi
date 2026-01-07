@@ -239,6 +239,7 @@ eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDob
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
+
 # Añade Composer al PATH [PHP]
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 # Configuración de Java JDK 21
@@ -290,6 +291,7 @@ alias docker-compose='docker-compose.exe'
 # Alias para OLLAMA IA:
 alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 
+
 # ═══════════════════════════════════════════════════════════
 # Configuración de opencommit (oco) con Ollama ~ [opencommit]
 # ═══════════════════════════════════════════════════════════
@@ -300,30 +302,30 @@ alias aicommit='oco'
 aicommitconfig() {
   echo "📦 Configurando opencommit con Ollama..."
   echo ""
-  
+
   # Verificar que Ollama esté corriendo
   if ! curl -s http://localhost:11434/api/tags &>/dev/null; then
     echo "❌ Ollama no está corriendo. Ejecuta: ollama serve"
     return 1
   fi
-  
+
   echo "✅ Ollama detectado en http://localhost:11434"
   echo ""
-  
+
   local models=($(ollama list | tail -n +2 | awk '{print $1}'))
-  
+
   if [[ ${#models[@]} -eq 0 ]]; then
     echo "❌ No hay modelos. Ejecuta 'ollama pull qwen2.5:0.5b'"
     return 1
   fi
-  
+
   echo "Modelos disponibles:"
   select model in "${models[@]}" "❌ Cancelar"; do
     if [[ "$model" == "❌ Cancelar" ]] || [[ -z "$model" ]]; then
       echo "Operación cancelada"
       return 0
     fi
-    
+
     if [[ -n "$model" ]]; then
       # Configuración completa con URL de Ollama
       oco config set OCO_AI_PROVIDER=ollama
@@ -333,7 +335,7 @@ aicommitconfig() {
       oco config set OCO_TOKENS_MAX_INPUT=12000
       oco config set OCO_TOKENS_MAX_OUTPUT=500
       oco config set OCO_ONE_LINE_COMMIT=false
-      
+
       echo ""
       echo "✅ opencommit configurado correctamente:"
       echo "   • Provider: ollama"
@@ -345,12 +347,12 @@ aicommitconfig() {
       echo "   • Recomendacion: Usa modelos Cloud, consume 0 GPU y 1.5GB de RAM, Para commits es PERFECTO que >>> Local"
       echo ""
       echo "🧪 Probando conexión..."
-      
+
       # Test rápido
       if oco --version &>/dev/null; then
         echo "✅ opencommit funcional"
       fi
-      
+
       break
     fi
   done
@@ -362,11 +364,6 @@ alias aicommit-showmodel='oco config get OCO_MODEL'
 # Alias adicionales útiles
 alias aicommitreset='oco config reset'  # Resetear configuración
 alias modellist='ollama list'  # Listar modelos disponibles
-
-# [eza] Buscar archivos, alternativas a ll y ls -a
-# 'll -a' # Listar enlaces y carpetas en el directorio actual
-# 'll -aT' # Listar carpetas y enlaces del home
-# 'll -l' # Listar enlaces en el directorio actual
 alias EspacioTotal='dust /*' # Tamaño de los archivos en el directorio actual
 # =============================================================================
 #                    GIT ALIASES Y FUNCIONES MEJORADAS
@@ -614,7 +611,8 @@ gitflow() {
   echo "     🚀 GIT WORKFLOW INTERACTIVO"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
-  echo "1. 📝 Commit con plantilla (abre editor)"
+  echo "0. 🚀 Editar commit actual  "
+  echo "1. 📝 Commit con plantilla (abre editor)  "
   echo "2. ⚡ Commit rápido (sin editor)"
   echo "3. 🤖 Commit con AI LOCAL (opencommit)"
   echo "4. 📦 Commit convencional (feat/fix/etc)"
@@ -622,12 +620,16 @@ gitflow() {
   echo "6. 📊 Ver log"
   echo "7. 📄 Editar plantilla de commit"
   echo "8. 📦 Revisar archivos historial de git"
-  echo "9. ❌ Cancelar"
+  echo "9. 🔁 Editar Commits históricos  "
+  echo "10. ❌ Cancelar"
   echo ""
   echo -n "Elige opción: "
   read option
 
   case $option in
+    0)
+      CommitEditar
+      ;;
     1)
       gitcommit
       ;;
@@ -675,6 +677,9 @@ TEMPLATE
       ;;
       #
     9)
+      CommitsHistorial
+      ;;
+    10)
       echo "❌ Cancelado"
       ;;
     *)
@@ -684,71 +689,34 @@ TEMPLATE
 }
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 💡 AYUDA
+#  💡 AYUDA COMPLETA DE GIT 󰊢  
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-githelp() {
-  cat << 'EOF'
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    🎯 GIT ALIASES - GUÍA RÁPIDA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+alias githelp='bash ~/scripts/git-help.sh'
 
-📦 COMMITS:
-  gitcommit          → Commit rápido con mensaje por defecto
-  gitai              → Commit con AI (opencommit/oco)
-  gitc "mensaje"     → Commit con mensaje personalizado
-  gitconv            → Commit convencional interactivo
-  gitflow            → Menú interactivo completo
-  gitig              → Revisar archivos historial de git
-
-🔍 VISUALIZACIÓN:
-  gits               → Status compacto
-  gitlog             → Log visual con graph
-  gitlogfull         → Log detallado con colores
-  gitdiff            → Ver cambios sin stagear
-  gitdiffs           → Ver cambios staged
-
-⏪ DESHACER:
-  gitundo            → Deshacer último commit (mantiene cambios)
-  gitundobard        → Deshacer último commit (BORRA cambios)
-  CommitEditar       → Editar mensaje del último commit
-  CommitsHistorial   → Editar últimos 5 commits
-
-🌿 BRANCHES:
-  gitb               → Listar todas las branches
-  gitnew <nombre>    → Crear y cambiar a nueva branch
-  gitco <branch>     → Cambiar de branch
-  gitmerge <branch>  → Mergear branch
-
-🚀 PUSH/PULL:
-  gitpush            → Push normal (git push)
-  gitpushforce       → Push forzado (con --force-with-lease)
-  gitpull            → Pull con rebase
-  gitsync            → Sincronizar fork con upstream
-
-🧹 LIMPIEZA:
-  gitclean           → Eliminar branches mergeadas
-  gitcleanfiles      → Eliminar archivos no trackeados
-  gitreset           → Reset completo al último commit
-
-📊 ESTADÍSTICAS:
-  gitstats           → Ver contribuciones por autor
-  gitsize            → Ver tamaño del repositorio
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EOF
-}
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# ═══════════════════════════════════════════════════════════
-# Sincronizar configs [Pywal, Nvim] ~ con Rsync
-# ═══════════════════════════════════════════════════════════
-
-~/sync-nvim.sh
-~/sync-wal.sh
-
+# Pyenv configuration
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+# COMANDOS DE OMARCHY
+alias omarchy-launch-webapp='bash ~/omarchy-arch-bin/omarchy-launch-webapp'
+alias omarchy-webapp-install='bash ~/omarchy-arch-bin/omarchy-webapp-install'
+# Config para the clicker de CARGO/rust
+export PATH="$HOME/.cargo/bin:$PATH"
+export YDOTOOL_SOCKET=/tmp/.ydotool_socket
+# Si quieres cambiar el repo rápidamente sin menú: para darle uso a Windows +Z 󱞣
+export GIT_CLEAN_REPO="$HOME/dotfiles-dizzi"
+                                                    
 # ═══════════════════════════════════════════════════════════
 # Editor por defecto (Git, etc)
 # ═══════════════════════════════════════════════════════════
 export EDITOR="nvim"
 export VISUAL="nvim"
 export GIT_EDITOR="nvim"
+
+# ═══════════════════════════════════════════════════════════
+# Sincronizar configs [Pywal, Nvim] ~ con Rsync
+# ═══════════════════════════════════════════════════════════
+
+~/sync-nvim.sh
+~/sync-wal.sh
