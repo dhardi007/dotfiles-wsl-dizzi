@@ -580,9 +580,6 @@ gitsync() {
 # 🧹 LIMPIEZA
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Limpiar branches mergeadas
-alias gitclean='git branch --merged | grep -v "\*" | xargs -n 1 git branch -d'
-
 # Limpiar archivos no trackeados
 alias gitcleanfiles='git clean -fd'
 
@@ -692,7 +689,8 @@ TEMPLATE
 #  💡 AYUDA COMPLETA DE GIT 󰊢  
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-alias githelp='bash ~/scripts/git-help.sh'
+alias githelp='bash ~/git-help.sh'
+alias gitclean='bash ~/git_clean.sh'
 
 # Pyenv configuration
 export PYENV_ROOT="$HOME/.pyenv"
@@ -705,7 +703,7 @@ alias omarchy-webapp-install='bash ~/omarchy-arch-bin/omarchy-webapp-install'
 export PATH="$HOME/.cargo/bin:$PATH"
 export YDOTOOL_SOCKET=/tmp/.ydotool_socket
 # Si quieres cambiar el repo rápidamente sin menú: para darle uso a Windows +Z 󱞣
-export GIT_CLEAN_REPO="$HOME/dotfiles-dizzi"
+export GIT_CLEAN_REPO="$HOME/dotfiles-wsl-dizzi"
                                                     
 # ═══════════════════════════════════════════════════════════
 # Editor por defecto (Git, etc)
