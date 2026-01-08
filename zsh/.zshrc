@@ -232,7 +232,7 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 # HABILITAR OH MY POSH [trae mas temas]
 # https://ohmyposh.dev/docs/themes
-eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"
+# eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"
 
 # Agrega al final del archivo ~/.zshrc
 # Reparar problemas de codificación de caracteres. [UTF-8]
