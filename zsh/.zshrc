@@ -689,16 +689,21 @@ TEMPLATE
 #  💡 AYUDA COMPLETA DE GIT 󰊢  
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-alias githelp='bash ~/git-help.sh'
-alias gitclean='bash ~/git_clean.sh'
+
+alias limpiar_cache='bash ~/scripts/limpiar_cache.sh'
+alias githelp='bash ~/scripts/git-help.sh'
+alias gitclean='bash ~/scripts/git_clean.sh'
 
 # Pyenv configuration
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
 # COMANDOS DE OMARCHY
 alias omarchy-launch-webapp='bash ~/omarchy-arch-bin/omarchy-launch-webapp'
 alias omarchy-webapp-install='bash ~/omarchy-arch-bin/omarchy-webapp-install'
+alias omarchy-pkg-install='bash ~/omarchy-arch-bin/omarchy-pkg-install'
+alias omarchy-pkg-aur-install='bash ~/omarchy-arch-bin/omarchy-pkg-aur-install'
+
 # Config para the clicker de CARGO/rust
 export PATH="$HOME/.cargo/bin:$PATH"
 export YDOTOOL_SOCKET=/tmp/.ydotool_socket

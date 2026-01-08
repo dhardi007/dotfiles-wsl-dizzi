@@ -1,0 +1,63 @@
+#!/bin/bash
+# /001   omarchy-launch-webapp
+# omarchy-launch-webapp funcional
+
+# Colores y formato
+RESET='\033[0m'
+BOLD='\033[1m'
+DIM='\033[2m'
+CYAN='\033[96m'
+GREEN='\033[92m'
+YELLOW='\033[93m'
+RED='\033[91m'
+BLUE='\033[94m'
+
+if [[ -z "$1" ]]; then
+  echo -e "${RED}${BOLD}❌ Error:${RESET} Falta la URL"
+  echo -e "${CYAN}Uso:${RESET} omarchy-launch-webapp ${YELLOW}<url>${RESET} ${DIM}[browser]${RESET}"
+  echo -e "${DIM}Ejemplo:${RESET} omarchy-launch-webapp ${YELLOW}https://claude.ai${RESET} ${BLUE}brave${RESET}"
+  exit 1
+fi
+
+URL="$1"
+BROWSER="${2:-firefox}"
+
+# Extraer dominio para perfil
+DOMAIN=$(echo "$URL" | sed -E 's|^https?://([^/]+).*|\1|' | tr -cd '[:alnum:]_-')
+
+# Usar xdg-open (más simple y funciona)
+if command -v xdg-open &>/dev/null; then
+  xdg-open "$URL" &
+  echo -e "${GREEN}${BOLD}✅ Abriendo${RESET} ${CYAN}$URL${RESET}"
+  exit 0
+fi
+
+# Firefox con perfil separado
+if [[ "$BROWSER" == "firefox" ]] && command -v firefox &>/dev/null; then
+  # Crear perfil si no existe
+  if ! find ~/.mozilla/firefox -name "*.$DOMAIN*" 2>/dev/null | grep -q .; then
+    firefox -CreateProfile "$DOMAIN $HOME/.mozilla/firefox/$DOMAIN" 2>/dev/null
+  fi
+  firefox -P "$DOMAIN" --new-window "$URL" &
+
+# Chromium/Chrome con --app
+elif [[ "$BROWSER" =~ chrome|chromium|brave|edge ]] && command -v "$BROWSER" &>/dev/null; then
+  "$BROWSER" --app="$URL" &
+
+# Navegador genérico
+elif command -v "$BROWSER" &>/dev/null; then
+  "$BROWSER" "$URL" &
+
+# Fallback: usar el navegador por defecto del sistema
+else
+  if command -v xdg-settings &>/dev/null; then
+    DEFAULT_BROWSER=$(xdg-settings get default-web-browser | sed 's/\.desktop$//')
+    "$DEFAULT_BROWSER" "$URL" &
+  else
+    echo -e "${RED}${BOLD}❌ No se pudo abrir el navegador${RESET}"
+    exit 1
+  fi
+fi
+
+echo -e "${GREEN}${BOLD}✅ Abriendo${RESET} ${CYAN}$URL${RESET} ${DIM}en${RESET} ${BLUE}$BROWSER${RESET}"
+exit 0

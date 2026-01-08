@@ -1,0 +1,38 @@
+#!/bin/bash
+#/004   omarchy-pkg-install
+
+# Colores ANSI
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+fzf_args=(
+  --multi
+  --preview '~/wrapper/pacman-info-colored.sh {1}'
+  --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select'
+  --preview-label-pos='bottom'
+  --preview-window 'down:65%:wrap'
+  --bind 'alt-p:toggle-preview'
+  --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+  --bind 'alt-k:preview-up,alt-j:preview-down'
+  --color 'pointer:green,marker:green,label:cyan,border:blue'
+)
+
+echo -e "${CYAN}🔍 Buscando paquetes oficiales...${RESET}"
+
+pkg_names=$(pacman -Slq | fzf "${fzf_args[@]}")
+
+if [[ -n "$pkg_names" ]]; then
+  echo -e "\n${GREEN}📦 Paquetes seleccionados:${RESET}"
+  echo -e "${YELLOW}$pkg_names${RESET}\n"
+
+  echo -e "${BLUE}⚙️  Instalando con pacman...${RESET}"
+  echo "$pkg_names" | tr '\n' ' ' | xargs sudo pacman -S --noconfirm
+
+  omarchy-show-done
+else
+  echo -e "${RED}❌ No se seleccionó ningún paquete${RESET}"
+fi

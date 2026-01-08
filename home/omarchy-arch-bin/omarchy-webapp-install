@@ -1,0 +1,180 @@
+#!/bin/bash
+# /003   omarchy-webapp-install
+
+# Colores y formato
+RESET='\033[0m'
+BOLD='\033[1m'
+DIM='\033[2m'
+CYAN='\033[96m'
+GREEN='\033[92m'
+YELLOW='\033[93m'
+RED='\033[91m'
+BLUE='\033[94m'
+MAGENTA='\033[95m'
+
+check_deps() {
+  for cmd in gum curl; do
+    if ! command -v "$cmd" &>/dev/null; then
+      echo -e "${RED}${BOLD}❌ Error:${RESET} ${YELLOW}$cmd${RESET} no está instalado"
+      return 1
+    fi
+  done
+  return 0
+}
+
+create_webapp() {
+  local APP_NAME="$1"
+  local APP_URL="$2"
+  local ICON_REF="$3"
+  local BROWSER="${4:-brave}" # Brave por defecto
+
+  echo -e "${BLUE}🔄 Creando webapp:${RESET} ${BOLD}$APP_NAME${RESET}"
+
+  # Validar
+  [[ -z "$APP_NAME" || -z "$APP_URL" ]] && {
+    echo -e "${RED}${BOLD}❌ Error:${RESET} Se necesitan nombre y URL"
+    exit 1
+  }
+
+  # Directorio de iconos
+  ICON_DIR="$HOME/.local/share/icons"
+  mkdir -p "$ICON_DIR"
+
+  # Icono
+  ICON_PATH=""
+  if [[ -n "$ICON_REF" ]] && [[ "$ICON_REF" =~ ^https?:// ]]; then
+    ICON_FILE="$ICON_DIR/${APP_NAME// /_}.png"
+    echo -e "${YELLOW}📥 Descargando icono...${RESET}"
+    if curl -sL -o "$ICON_FILE" "$ICON_REF"; then
+      ICON_PATH="$ICON_FILE"
+      echo -e "${GREEN}✅ Icono descargado${RESET}"
+    else
+      ICON_PATH="web-browser"
+      echo -e "${YELLOW}⚠️  Usando icono por defecto${RESET}"
+    fi
+  else
+    ICON_PATH="web-browser"
+  fi
+
+  # COMANDO EXEC CORREGIDO - ¡ESTO ES LA CLAVE!
+  # Para navegadores Chromium: usar --app para modo aplicación
+  # Para Firefox: usar --new-window para ventana dedicada
+
+  local EXEC_COMMAND=""
+
+  case "$BROWSER" in
+  brave | chrome | chromium | edge | vivaldi | opera)
+    # Modo aplicación REAL (sin UI de navegador)
+    EXEC_COMMAND="$BROWSER --app=\"$APP_URL\""
+    ;;
+  firefox)
+    # Firefox no tiene --app, pero podemos usar ventana dedicada
+    # Extraer dominio para perfil único
+    DOMAIN=$(echo "$APP_URL" | sed -E 's|^https?://([^/]+).*|\1|' | tr -cd '[:alnum:]')
+    EXEC_COMMAND="sh -c 'if ! pgrep -f \"firefox.*-P.*$DOMAIN\" >/dev/null; then firefox -CreateProfile \"$DOMAIN\" 2>/dev/null; fi; firefox -P \"$DOMAIN\" --new-window \"$APP_URL\"'"
+    notify-send "📱 Para cambiar de perfil de firefox:  firefox -ProfileManager"
+    ;;
+  *)
+    # Fallback: xdg-open
+    EXEC_COMMAND="sh -c 'xdg-open \"$APP_URL\"'"
+    ;;
+  esac
+
+  # Crear archivo .desktop
+  DESKTOP_FILE="$HOME/.local/share/applications/${APP_NAME// /_}.desktop"
+
+  cat >"$DESKTOP_FILE" <<DESKTOP_ENTRY
+[Desktop Entry]
+Version=1.0
+Name=$APP_NAME
+Comment=Open $APP_NAME
+Exec=$EXEC_COMMAND
+Terminal=false
+Type=Application
+Icon=$ICON_PATH
+Categories=Network;
+StartupNotify=true
+StartupWMClass=${APP_NAME// /_}
+DESKTOP_ENTRY
+
+  chmod +x "$DESKTOP_FILE"
+
+  echo -e "${GREEN}${BOLD}✅ Webapp creada:${RESET} ${CYAN}$DESKTOP_FILE${RESET}"
+  echo -e "${MAGENTA}🎯 Ejecuta desde tu menú o con:${RESET}"
+  echo -e "   ${DIM}$BROWSER --app=\"$APP_URL\"${RESET}"
+
+  # Actualizar base de datos
+  command -v update-desktop-database &>/dev/null &&
+    update-desktop-database ~/.local/share/applications
+}
+
+# Modo interactivo mejorado
+interactive_mode() {
+  echo -e "\n${CYAN}${BOLD}╔══════════════════════════════════════════════════╗${RESET}"
+  echo -e "${CYAN}${BOLD}║      📱 CREAR WEBAPP COMO APLICACIÓN             ║${RESET}"
+  echo -e "${CYAN}${BOLD}╚══════════════════════════════════════════════════╝${RESET}\n"
+
+  echo -e "${DIM}Esto creará una aplicación NATIVA para un sitio web,"
+  echo -e "con su propio icono en el menú y ventana dedicada.${RESET}\n"
+
+  # Nombre
+  APP_NAME=$(gum input --prompt "📝 Nombre de la aplicación: " --placeholder "Ej: Claude AI, WhatsApp Web" --value "")
+  [[ -z "$APP_NAME" ]] && {
+    echo -e "${RED}${BOLD}❌ Nombre requerido${RESET}"
+    exit 1
+  }
+
+  # URL
+  APP_URL=$(gum input --prompt "🌐 URL del sitio: " --placeholder "https://ejemplo.com" --value "")
+  [[ -z "$APP_URL" ]] && {
+    echo -e "${RED}${BOLD}❌ URL requerida${RESET}"
+    exit 1
+  }
+
+  # Navegador
+  echo -e "\n${BLUE}🌍 ¿En qué navegador quieres abrirlo?${RESET}"
+  echo -e "${DIM}   (Brave/Chrome abren como APLICACIÓN, Firefox como ventana dedicada)${RESET}"
+  BROWSER=$(gum choose \
+    "brave  (recomendado - modo aplicación)" \
+    "chrome (modo aplicación)" \
+    "firefox (ventana dedicada)" \
+    "chromium (modo aplicación)" \
+    --header "Selecciona navegador" | cut -d' ' -f1)
+
+  # Icono
+  echo -e "\n${MAGENTA}🎨 ¿Quieres un icono personalizado?${RESET}"
+  echo -e "${DIM}1. Sí, descargar de una URL"
+  echo -e "2. No, usar icono por defecto${RESET}"
+
+  ICON_CHOICE=$(gum choose "1" "2" --header "Opción de icono")
+
+  ICON_REF=""
+  if [[ "$ICON_CHOICE" == "1" ]]; then
+    ICON_REF=$(gum input --prompt "📎 URL del icono (PNG): " \
+      --placeholder "https://.../dashboard-icons/png/claude-ai.png  Recomiendo usar Vicinae Raycast > Dashboard Icons Extension para buscar iconos" \
+      --value "")
+  fi
+
+  # Confirmar
+  echo -e "\n${CYAN}${BOLD}📋 Resumen:${RESET}"
+  echo -e "   ${BOLD}Nombre:${RESET}    ${GREEN}$APP_NAME${RESET}"
+  echo -e "   ${BOLD}URL:${RESET}       ${BLUE}$APP_URL${RESET}"
+  echo -e "   ${BOLD}Navegador:${RESET} ${YELLOW}$BROWSER${RESET}"
+  [[ -n "$ICON_REF" ]] && echo -e "   ${BOLD}Icono:${RESET}     ${MAGENTA}Personalizado${RESET}" || echo -e "   ${BOLD}Icono:${RESET}     ${DIM}Por defecto${RESET}"
+
+  gum confirm "¿Crear aplicación?" || exit 0
+
+  create_webapp "$APP_NAME" "$APP_URL" "$ICON_REF" "$BROWSER"
+}
+
+main() {
+  check_deps || exit 1
+
+  if [[ "$#" -lt 2 ]]; then
+    interactive_mode
+  else
+    create_webapp "$@"
+  fi
+}
+
+main "$@"
