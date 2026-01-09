@@ -20,6 +20,13 @@
   ```
 ---
 
+
+## 💤 LazyVim 🦥
+
+![Nvim Windows Terminal](https://github.com/user-attachments/assets/f42c7cdd-e2d9-482d-b918-b7c97664eb22)
+
+![Nvim Desktop](https://github.com/user-attachments/assets/8adb6f60-bb35-4704-b4ab-12bd587f3992)
+
 ## 📋 Tabla de Contenidos
 
 - [Diferencias Arch vs Debian](#-diferencias-arch-vs-debian)
@@ -390,6 +397,7 @@ zsh-syntax-highlighting 0.8.0-1
 *I use Arch, btw.*
 
 </div>
+
 
 
 
