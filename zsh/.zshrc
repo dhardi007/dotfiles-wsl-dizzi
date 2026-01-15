@@ -291,11 +291,39 @@ alias docker-compose='docker-compose.exe'
 # Alias para OLLAMA IA:
 alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 
+# ════════════════════════════════════════════════════════════════════════════════════════════════
+# Configuración de opencommit (oco) con Ollama ~ [opencommit] > con control de Nothink
+# alias aicommit='oco'
+# ════════════════════════════════════════════════════════════════════════════════════════════════
 
-# ═══════════════════════════════════════════════════════════
-# Configuración de opencommit (oco) con Ollama ~ [opencommit]
-# ═══════════════════════════════════════════════════════════
-alias aicommit='oco'
+# Activar nothink por defecto (commits rápidos)
+export OCO_NOTHINK=true
+
+# Wrapper inteligente
+aicommit() {
+  if [ "$OCO_NOTHINK" = true ]; then
+    local nothink_prompt="/set nothink"
+    
+    if [ $# -eq 0 ]; then
+      oco -c "$nothink_prompt"
+    else
+      oco -c "$nothink_prompt. Context: $*"
+    fi
+  else
+    oco "$@"
+  fi
+}
+
+# Toggle rápido
+aicommit-toggle() {
+  if [ "$OCO_NOTHINK" = true ]; then
+    export OCO_NOTHINK=false
+    echo "🧠 Reasoning activado"
+  else
+    export OCO_NOTHINK=true
+    echo "⚡ Nothink activado"
+  fi
+}
 
 # Comando para reconfigurar opencommit fácilmente
 # Función dinámica para configurar opencommit
@@ -716,6 +744,38 @@ export GIT_CLEAN_REPO="$HOME/dotfiles-wsl-dizzi"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export GIT_EDITOR="nvim"
+
+# ═══════════════════════════════════════════════════════════
+# Alias para la herramienta de MACROS de LINUX
+# ═══════════════════════════════════════════════════════════
+export YDOTOOL_SOCKET=/tmp/.ydotool_socket
+
+# ═══════════════════════════════════════════════════════════
+# GNOME Keyring (protegido contra errores de glob)
+# ═══════════════════════════════════════════════════════════
+if [[ -d /run/user/$(id -u)/keyring ]]; then
+  # Control socket
+  _keyring_control=$(find /run/user/$(id -u)/keyring* -name control 2>/dev/null | head -1)
+  [[ -n "$_keyring_control" ]] && export GNOME_KEYRING_CONTROL="$_keyring_control"
+  
+  # SSH socket
+  _keyring_ssh=$(find /run/user/$(id -u)/keyring* -name ssh 2>/dev/null | head -1)
+  [[ -n "$_keyring_ssh" ]] && export SSH_AUTH_SOCK="$_keyring_ssh"
+  
+  unset _keyring_control _keyring_ssh
+fi
+
+# ═════════════════════════════
+#   TRUCAZOS A SABER 🗒️    #
+# ═════════════════════════════
+# PARA BUSCAR nombres USA:
+# cd ~/.config/nvim
+# rg "ziontee113/move" -l
+# ALIAS PARA BUSCAR COINCIDENCIAS.
+# ------------------------------------------------------------------------------
+# Comparar archivos
+# diff <(sort /home/diego/dotfiles-wsl-dizzi/nvim-wsl/.config/nvim/lua/config/keymaps.lua) <(sort /home/diego/dotfiles-dizzi/nvim/.config/nvim/lua/config/keymaps.lua)
+# ------------------------------------------------------------------------------
 
 # ═══════════════════════════════════════════════════════════
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
