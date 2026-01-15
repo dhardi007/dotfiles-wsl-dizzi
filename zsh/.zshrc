@@ -3,8 +3,8 @@
 #                    CONFIGURACIÓN DE ZSH EN ARCH LINUX WSL
 #
 # =============================================================================
-
-
+#
+# ollama serve &
 # Mapeo de teclas para la edición de comandos.
 bindkey '^H' backward-kill-word
 bindkey '^[[3;5~' kill-word
@@ -289,7 +289,14 @@ alias docker-compose='docker-compose.exe'
 (cat ~/.cache/wal/sequences &) 2>/dev/null
 
 # Alias para OLLAMA IA:
-alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
+if command -v ollama &>/dev/null; then
+  # Ya existe ollama nativo en el sistema
+  : # No hacer nada
+else
+  # Usar versión de Windows
+  alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
+fi
+
 
 # ════════════════════════════════════════════════════════════════════════════════════════════════
 # Configuración de opencommit (oco) con Ollama ~ [opencommit] > con control de Nothink

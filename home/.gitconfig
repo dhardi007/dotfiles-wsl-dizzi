@@ -12,3 +12,4 @@
 
 [core]
 	editor = nvim
+	filemode = true

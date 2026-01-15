@@ -199,7 +199,7 @@ echo -e "${GREEN}🤖 Instalando herramientas de IA...${NC}"
 # tgpt
 if ! run_as_user "command -v tgpt" &>/dev/null; then
   echo -e "${YELLOW}   Instalando tgpt...${NC}"
-  run_as_user "yay -S --needed --noconfirm tgpt-git ollama-bin opencode tabnine claude-code" &&
+  run_as_user "yay -S --needed --noconfirm opencommit tgpt-git ollama-bin opencode tabnine claude-code" &&
     echo -e "${GREEN}   ✓ tgpt instalado${NC}" ||
     echo -e "${YELLOW}   ⚠️ tgpt falló${NC}"
 else
@@ -298,32 +298,30 @@ echo -e "${GREEN}✅ Zsh configurado${NC}"
 # ═══════════════════════════════════════════════════════════
 echo -e "${GREEN}🔗 Aplicando dotfiles con Stow...${NC}"
 
-if [ -d "$DOTFILES_DIR" ]; then
-  cd "$DOTFILES_DIR"
-  for d in */; do
-    d=${d%/}
-    if [[ "$d" != "home" && "$d" != "nvim-wsl" && "$d" != "fastfetch" && "$d" != "workspace" ]]; then
-      echo "   Mapeando $d..."
-      run_as_user "cd '$DOTFILES_DIR' && stow -R '$d' 2>/dev/null || true"
+if [[ ! -d ~/dotfiles-wsl-dizzi ]]; then
+  print_installing "Clonando dotfiles desde GitHub"
+  git clone https://github.com/dizzi1222/dotfiles-dizzi.git ~/dotfiles-dizzi || {
+    print_warning "Error clonando dotfiles"
+  }
+fi
+
+if [[ -d ~/dotfiles-wsl-dizzi ]]; then
+  cd ~/dotfiles-dizzi
+
+  print_status "Inicializando submódulos git..."
+  git submodule update --init --recursive 2>/dev/null || print_warning "No hay submódulos o falló su actualización"
+
+  print_status "Aplicando dotfiles con stow..."
+
+  for pkg in fastfetch home nvim-wsl yazi htop tmux zsh; do
+    if [[ -d $pkg ]]; then
+      print_package "Stow: $pkg"
+      stow $pkg 2>/dev/null || print_warning "Stow falló para $pkg"
     fi
   done
 
-  # Mapear archivos específicos de home/ manualmente
-  echo "   Mapeando scripts de home/..."
-  if [ -d "$DOTFILES_DIR/home" ]; then
-    for file in "$DOTFILES_DIR/home"/*; do
-      if [ -f "$file" ]; then
-        filename=$(basename "$file")
-        ln -sf "$file" "$HOME_DIR/$filename" 2>/dev/null || true
-        chown -h "$REAL_USER:$USER_GROUP" "$HOME_DIR/$filename" 2>/dev/null || true
-      fi
-    done
-  fi
-
-  cd - &>/dev/null
-  echo -e "${GREEN}✅ Dotfiles aplicados${NC}"
-else
-  echo -e "${YELLOW}⚠️ Dotfiles no encontrados en $DOTFILES_DIR${NC}"
+  cd ~
+  print_success "Dotfiles aplicados"
 fi
 
 # ═══════════════════════════════════════════════════════════
