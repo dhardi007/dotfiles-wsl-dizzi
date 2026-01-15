@@ -65,7 +65,7 @@ cat <<"ASCIIART"
 ░░░╚═╝░░░╚═╝░░╚═════╝░╚══════╝
 
 ╔══════════════════════════════════════════════════════════════════════╗
-║        🚀 INSTALACIÓN ULTRA-FAST WSL 🚀                         ║
+║        🚀 INSTALACIÓN ULTRA-FAST WSL 🚀          	               ║
 ║            VERSIÓN PERFECTED V5                                      ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
@@ -199,7 +199,7 @@ echo -e "${GREEN}🤖 Instalando herramientas de IA...${NC}"
 # tgpt
 if ! run_as_user "command -v tgpt" &>/dev/null; then
   echo -e "${YELLOW}   Instalando tgpt...${NC}"
-  run_as_user "yay -S --needed --noconfirm tgpt-git" &&
+  run_as_user "yay -S --needed --noconfirm tgpt-git ollama-bin opencode tabnine claude-code" &&
     echo -e "${GREEN}   ✓ tgpt instalado${NC}" ||
     echo -e "${YELLOW}   ⚠️ tgpt falló${NC}"
 else
@@ -288,6 +288,8 @@ for plugin in zsh-syntax-highlighting zsh-autosuggestions zsh-completions zsh-hi
     run_as_user "git clone https://github.com/zsh-users/$plugin.git '$ZSH_CUSTOM/plugins/$plugin' 2>/dev/null || true"
   fi
 done
+
+~/zsh-istall-wsl.sh
 
 echo -e "${GREEN}✅ Zsh configurado${NC}"
 
