@@ -234,6 +234,12 @@ typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # https://ohmyposh.dev/docs/themes
 # eval "$(oh-my-posh init zsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/1_shell.omp.json')"
 
+# Configuración global de Git
+git config --global core.quotepath false
+git config --global core.precomposeunicode true
+git config --global i18n.commitencoding utf-8
+git config --global i18n.logoutputencoding utf-8
+
 # Agrega al final del archivo ~/.zshrc
 # Reparar problemas de codificación de caracteres. [UTF-8]
 export LANG=en_US.UTF-8
