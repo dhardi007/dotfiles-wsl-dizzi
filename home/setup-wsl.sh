@@ -313,7 +313,7 @@ if [[ -d ~/dotfiles-wsl-dizzi ]]; then
 
   print_status "Aplicando dotfiles con stow..."
 
-  for pkg in fastfetch home nvim-wsl yazi htop tmux zsh; do
+  for pkg in fastfetch home nvim yazi htop tmux zsh; do
     if [[ -d $pkg ]]; then
       print_package "Stow: $pkg"
       stow $pkg 2>/dev/null || print_warning "Stow falló para $pkg"
@@ -328,9 +328,9 @@ fi
 # 11. NEOVIM SYNC
 # ═══════════════════════════════════════════════════════════
 echo -e "${GREEN}🚀 Sincronizando Neovim...${NC}"
-if [ -d "$DOTFILES_DIR/nvim-wsl" ]; then
+if [ -d "$DOTFILES_DIR/nvim" ]; then
   mkdir -p "$WIN_APPDATA/nvim"
-  rsync -av --delete --exclude '.git' "$DOTFILES_DIR/nvim-wsl/" "$WIN_APPDATA/nvim/"
+  rsync -av --delete --exclude '.git' "$DOTFILES_DIR/nvim/" "$WIN_APPDATA/nvim/"
   echo -e "${GREEN}✅ Neovim sincronizado${NC}"
 fi
 
