@@ -801,3 +801,14 @@ export BEDROCK_KEYS=aws_access_key_id,aws_secret_access_key,aws_region[,aws_sess
 
 ~/sync-nvim.sh
 ~/sync-wal.sh
+
+# ═══════════════════════════════════════════════════════════
+# LLAVES-KEY... API
+# ═══════════════════════════════════════════════════════════
+# Verificar permisos de ejecución del archivo de API keys
+if [[ ! -x ~/.api-keys.sh ]]; then
+    echo "⚠️  Asignando permisos de ejecución a ~/.api-keys.sh"
+    chmod +x ~/.api-keys.sh
+fi
+source ~/.api-keys.sh
+
