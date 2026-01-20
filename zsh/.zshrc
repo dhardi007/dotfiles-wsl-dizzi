@@ -810,5 +810,7 @@ if [[ ! -x ~/.api-keys.sh ]]; then
     echo "⚠️  Asignando permisos de ejecución a ~/.api-keys.sh"
     chmod +x ~/.api-keys.sh
 fi
-source ~/.api-keys.sh
-
+# Cargar API keys al iniciar terminal
+if [ -f ~/.api-keys.sh ]; then
+    source ~/.api-keys.sh
+fi
