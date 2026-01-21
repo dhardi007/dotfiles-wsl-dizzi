@@ -1,3 +1,4 @@
 [submodule "nvim"]
 	path = nvim
-	url = https://github.com/dizzi007/nvim.git
+	url = https://github.com/dhardi007/nvim.git
+	branch = main
