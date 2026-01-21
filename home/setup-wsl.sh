@@ -325,7 +325,7 @@ if [[ -d ~/dotfiles-wsl-dizzi ]]; then
 
   print_status "Aplicando dotfiles con stow..."
 
-  for pkg in fastfetch home nvim yazi htop tmux zsh; do
+  for pkg in fastfetch mcphub home nvim yazi htop tmux zsh opencode; do
     if [[ -d $pkg ]]; then
       print_package "Stow: $pkg"
       stow $pkg 2>/dev/null || print_warning "Stow falló para $pkg"
