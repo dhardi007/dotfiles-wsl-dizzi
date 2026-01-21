@@ -98,8 +98,14 @@ while true; do
     rm -rf ~/.local/share/nvim/{lazy,packer,site,lspconfig,log} # limpieza selectiva
 
     # En WSL/Linux
-    rm -rf ~/.local/share/nvim/mason
-    rm -rf ~/.local/state/nvim/mason.log
+    # rm -rf ~/.local/share/nvim/mason
+    # rm -rf ~/.local/state/nvim/mason.log
+    # REINSTALAR AVANTE
+    if [ -d ~/.local/share/nvim/lazy/avante.nvim ] 2>/dev/null; then
+      cd ~/.local/share/nvim/lazy/avante.nvim
+      make 2>/dev/null || true
+      echo -e "${GREEN}✅ Plantillas Restauradas..${RESET}"
+    fi
 
     # Detectar qué gestor de paquetes está disponible e instalar tree-sitter-cli
     if command -v npm >/dev/null 2>&1; then
@@ -124,7 +130,6 @@ while true; do
     echo -e "${MAGENTA}  :MasonInstall lua-language-server typescript-language-server json-lsp eslint-lsp angular-language-server marksman${RESET}"
 
     # nvim & # <--- Se ejecuta en background, el script continúa inmediatamente
-    i
     # CASO EXTREMO NO RECOMENDADO! Solo si falla continuamente Mason
     # rm -rf ~/.local/share/nvim                                  # limpieza total
     # rm -rf ~/.local/share/nvim/lazy
