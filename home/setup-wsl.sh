@@ -219,6 +219,18 @@ else
   echo -e "${GREEN}   ✓ Gemini CLI ya instalado${NC}"
 fi
 
+# OPENCODE BEST AI
+if ! run_as_user "command -v opencode" &>/dev/null; then
+  echo -e "${YELLOW}   Instalando Gemini CLI...${NC}"
+  run_as_user "
+  yay -S opencode-bin --needed --noconfirm
+  " &&
+    echo -e "${GREEN}   ✓ Opencode instalado${NC}" ||
+    echo -e "${YELLOW}   ⚠️ Opencode falló${NC}"
+else
+  echo -e "${GREEN}   ✓ Opencode ya instalado${NC}"
+fi
+
 # opencommit
 if ! run_as_user "command -v oco" &>/dev/null; then
   echo -e "${YELLOW}   Instalando opencommit...${NC}"
