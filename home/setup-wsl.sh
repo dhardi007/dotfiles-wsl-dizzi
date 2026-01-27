@@ -336,6 +336,8 @@ if [[ -d ~/dotfiles-wsl-dizzi ]]; then
 
 echo "${BOLD}${CYAN}Paso 1: Clonando repositorios...${RESET}"
 # Verificar submodules
+git submodule update --init --recursive
+
 rm -rf nvim
 git submodule update --init --recursive nvim
 
