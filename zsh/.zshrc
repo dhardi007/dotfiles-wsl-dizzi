@@ -779,23 +779,6 @@ if [[ -d /run/user/$(id -u)/keyring ]]; then
 fi
 
 # ═══════════════════════════════════════════════════════════
-# LLAVES-KEY... API
-# ═══════════════════════════════════════════════════════════
-export GEMINI_API_KEY="AIzaSyDpUwpMCCyxEHT6Ee9ZdepD5b6yvsnS49g"
-
-# Scoped keys (recommended) PARA |  AVANTE.nvim
-export AVANTE_GEMINI_API_KEY=AIzaSyDpUwpMCCyxEHT6Ee9ZdepD5b6yvsnS49g
-
-export AVANTE_ANTHROPIC_API_KEY=your-claude-api-key
-export AVANTE_OPENAI_API_KEY=your-openai-api-key
-export AVANTE_AZURE_OPENAI_API_KEY=your-azure-api-key
-export AVANTE_CO_API_KEY=your-cohere-api-key
-export AVANTE_AIHUBMIX_API_KEY=your-aihubmix-api-key
-export AVANTE_MOONSHOT_API_KEY=your-moonshot-api-key
-# For Amazon Bedrock:
-export BEDROCK_KEYS=aws_access_key_id,aws_secret_access_key,aws_region[,aws_session_token] # ~/.aws/profile, or env vars
-
-# ═══════════════════════════════════════════════════════════
 # Sincronizar configs [Pywal, Nvim] ~ con Rsync
 # ═══════════════════════════════════════════════════════════
 

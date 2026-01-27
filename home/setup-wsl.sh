@@ -325,12 +325,26 @@ if [[ -d ~/dotfiles-wsl-dizzi ]]; then
 
   print_status "Aplicando dotfiles con stow..."
 
-  for pkg in fastfetch mcphub home nvim yazi htop tmux zsh opencode; do
+  for pkg in fastfetch mcphub home nvim yazi local htop tmux zsh opencode; do
     if [[ -d $pkg ]]; then
       print_package "Stow: $pkg"
       stow $pkg 2>/dev/null || print_warning "Stow falló para $pkg"
     fi
   done
+
+  print_status "Aplicando Submodulos [NVIM]    ."
+
+  echo "${BOLD}${CYAN}Paso 1: Clonando repositorios...${RESET}"
+  # Verificar submodules
+  git submodule update --init --recursive
+
+  rm -rf nvim
+  git submodule update --init --recursive nvim
+
+  echo "${BOLD}${CYAN}Paso 2: Corrigiendo el branch main...${RESET}"
+
+  cd nvim/ && git checkout main
+  cd ../
 
   cd ~
   print_success "Dotfiles aplicados"
