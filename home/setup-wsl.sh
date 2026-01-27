@@ -332,6 +332,18 @@ if [[ -d ~/dotfiles-wsl-dizzi ]]; then
     fi
   done
 
+  print_status "Aplicando Submodulos [NVIM]    ."
+
+echo "${BOLD}${CYAN}Paso 1: Clonando repositorios...${RESET}"
+# Verificar submodules
+git submodule update --init --recursive nvim
+rm -rf nvim
+
+echo "${BOLD}${CYAN}Paso 2: Corrigiendo el branch main...${RESET}"
+
+cd  nvim/  && git checkout main
+cd  ../
+
   cd ~
   print_success "Dotfiles aplicados"
 fi
