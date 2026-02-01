@@ -371,7 +371,8 @@ aicommitconfig() {
       # Configuración completa con URL de Ollama
       oco config set OCO_AI_PROVIDER=ollama
       oco config set OCO_MODEL="$model" # ← MODELO, recomendacion: Usa modelos Cloud para commits >>> Local
-      oco config set OCO_OLLAMA_API_URL=http://localhost:11434  # ← CLAVE
+      # Antes oco config set OCO_OLLAMA_API_URL=http://localhost:11434  #  ANTES ← CLAVE
+      oco config set OCO_API_KEY=ANTHROPIC_API_KEY # Nueva sintaxis en WSL 
       oco config set OCO_LANGUAGE=es_ES
       oco config set OCO_TOKENS_MAX_INPUT=12000
       oco config set OCO_TOKENS_MAX_OUTPUT=500
@@ -797,3 +798,4 @@ fi
 if [ -f ~/.api-keys.sh ]; then
     source ~/.api-keys.sh
 fi
+export PATH="$HOME/.local/bin:$PATH"

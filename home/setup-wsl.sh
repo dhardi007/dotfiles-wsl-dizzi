@@ -129,7 +129,7 @@ pacman -S --needed --noconfirm \
   git base-devel zsh neovim rsync gcc \
   ripgrep fd eza fastfetch stow fzf \
   github-cli python-pywal imagemagick \
-  python-pip expat nodejs npm curl wget
+  python-pip python-pipx expat nodejs npm curl wget
 
 # ═══════════════════════════════════════════════════════════
 # 3. YAY
