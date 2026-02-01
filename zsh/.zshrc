@@ -303,7 +303,6 @@ else
   alias ollama="/mnt/c/Users/Diego/AppData/Local/Programs/Ollama/ollama.exe"
 fi
 
-
 # ════════════════════════════════════════════════════════════════════════════════════════════════
 # Configuración de opencommit (oco) con Ollama ~ [opencommit] > con control de Nothink
 # alias aicommit='oco'
@@ -371,8 +370,8 @@ aicommitconfig() {
       # Configuración completa con URL de Ollama
       oco config set OCO_AI_PROVIDER=ollama
       oco config set OCO_MODEL="$model" # ← MODELO, recomendacion: Usa modelos Cloud para commits >>> Local
-      # Antes oco config set OCO_OLLAMA_API_URL=http://localhost:11434  #  ANTES ← CLAVE
-      oco config set OCO_API_KEY=ANTHROPIC_API_KEY # Nueva sintaxis en WSL 
+      oco config set OCO_OLLAMA_API_URL=http://localhost:11434  # ← CLAVE
+      # oco config set OCO_API_KEY=ANTHROPIC_API_KEY # Nueva sintaxis en WSL 
       oco config set OCO_LANGUAGE=es_ES
       oco config set OCO_TOKENS_MAX_INPUT=12000
       oco config set OCO_TOKENS_MAX_OUTPUT=500
@@ -407,6 +406,7 @@ alias aicommit-showmodel='oco config get OCO_MODEL'
 alias aicommitreset='oco config reset'  # Resetear configuración
 alias modellist='ollama list'  # Listar modelos disponibles
 alias EspacioTotal='dust /*' # Tamaño de los archivos en el directorio actual
+
 # =============================================================================
 #                    GIT ALIASES Y FUNCIONES MEJORADAS
 # =============================================================================
