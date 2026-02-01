@@ -797,3 +797,4 @@ fi
 if [ -f ~/.api-keys.sh ]; then
     source ~/.api-keys.sh
 fi
+export PATH="$HOME/.local/bin:$PATH"
