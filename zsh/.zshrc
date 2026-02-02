@@ -665,7 +665,8 @@ gitflow() {
   echo "7. 📄 Editar plantilla de commit"
   echo "8. 📦 Revisar archivos historial de git"
   echo "9. 🔁 Editar Commits históricos  "
-  echo "10. ❌ Cancelar"
+  echo "10. ❌ Eliminar commit actual"
+  echo "11. ❌ Cancelar"
   echo ""
   echo -n "Elige opción: "
   read option
@@ -724,6 +725,9 @@ TEMPLATE
       CommitsHistorial
       ;;
     10)
+      git reset --soft HEAD~1
+      ;;
+    11)
       echo "❌ Cancelado"
       ;;
     *)
