@@ -382,7 +382,7 @@ aicommitconfig() {
       oco config set OCO_MODEL="$model"
       oco config set OCO_API_URL="${OLLAMA_URL}/api/chat"  # 🔥 Usa variable en vez de hardcodear
       # oco config set OCO_API_KEY="ANTHROPIC_API_KEY" -- ESTO ENTRA EN CONFLICTO CON Ollama y afecta el Git push:
-      oco config set OCO_GITPUSH=false
+      # oco config set OCO_GITPUSH=false
       oco config set OCO_LANGUAGE=es_ES
       oco config set OCO_TOKENS_MAX_INPUT=12000
       oco config set OCO_TOKENS_MAX_OUTPUT=500

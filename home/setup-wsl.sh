@@ -121,6 +121,31 @@ fi
 echo -e "✅ Permisos corregidos"
 
 # ═══════════════════════════════════════════════════════════
+# PASO 1.5: Git Config (AUTO PUSH)
+# ═══════════════════════════════════════════════════════════
+print_step "3/22: Git Configuración"
+print_installing "Configurando git..."
+
+# Auto-setup remote branches (FIX del git push --set-upstream)
+git config --global push.autoSetupRemote true
+git config --global init.defaultBranch main
+git config --global pull.rebase false
+
+# User config (si no existe)
+if [[ -z "$(git config --global user.name)" ]]; then
+  read -p "Git username: " git_name
+  git config --global user.name "$git_name"
+fi
+
+if [[ -z "$(git config --global user.email)" ]]; then
+  read -p "Git email: " git_email
+  git config --global user.email "$git_email"
+fi
+
+print_success "Git configurado"
+print_info "Auto-push habilitado (no más --set-upstream)"
+
+# ═══════════════════════════════════════════════════════════
 # 2. PAQUETES ESENCIALES
 # ═══════════════════════════════════════════════════════════
 echo -e "${GREEN}📦 Instalando paquetes esenciales...${NC}"
