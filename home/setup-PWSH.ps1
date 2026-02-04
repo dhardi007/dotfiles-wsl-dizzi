@@ -41,7 +41,6 @@ $packages = @(
   "Microsoft.PowerShell",
   "Neovim.Neovim",
   "BurntSushi.ripgrep",
-  "ShiningLight.OpenSSL.Light",
   "sharkdp.fd",
   "junegunn.fzf",
   "Microsoft.Git",
@@ -89,6 +88,15 @@ foreach ($pkg in $packages) {
   Write-Host "   Verificando $pkg..." -ForegroundColor $E_CYAN
   # --include-unknown evita fallos si ya está instalado pero no trackeado exactamente
   winget install --id $pkg --silent --accept-package-agreements --accept-source-agreements --upgrade | Out-Null
+}
+
+# 1.5. INSTALACIÓN DE OPENSSL VÍA SCOOP
+Write-Host "`n🔐 Instalando OpenSSL (Scoop)..." -ForegroundColor $E_GREEN
+if (Get-Command scoop -ErrorAction SilentlyContinue) {
+  scoop install openssl
+  Write-Host "✅ OpenSSL instalado vía Scoop" -ForegroundColor $E_CYAN
+} else {
+  Write-Host "⚠️ Scoop no está instalado. Instala OpenSSL manualmente." -ForegroundColor $E_YELLOW
 }
 
 # 2. INSTALACIÓN DE uwal (WinWal)
