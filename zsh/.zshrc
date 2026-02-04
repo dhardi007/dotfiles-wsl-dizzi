@@ -669,7 +669,8 @@ gitflow() {
   echo "8. 📦 Revisar archivos historial de git"
   echo "9. 🔁 Editar Commits históricos  "
   echo "10. ❌ Eliminar commit actual"
-  echo "11. ❌ Cancelar"
+  echo "11. ❌ Cancelar Merge del REMOTO, GITHUB (luego usa git push -f 'la-rama' para restaurar)  .
+  echo "12. ❌ Cancelar"
   echo ""
   echo -n "Elige opción: "
   read option
@@ -731,6 +732,9 @@ TEMPLATE
       git reset --soft HEAD~1
       ;;
     11)
+      git merge --abort
+      ;;
+    12)
       echo "❌ Cancelado"
       ;;
     *)
