@@ -658,88 +658,69 @@ gitflow() {
   echo "     🚀 GIT WORKFLOW INTERACTIVO"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
-  echo "0. 🚀 Editar commit actual  "
-  echo "1. 📝 Commit con plantilla (abre editor)  "
-  echo "2. ⚡ Commit rápido (sin editor)"
-  echo "3. 🤖 Commit con AI LOCAL (opencommit)"
-  echo "4. 📦 Commit convencional (feat/fix/etc)"
-  echo "5. 🔍 Ver status"
-  echo "6. 📊 Ver log"
-  echo "7. 📄 Editar plantilla de commit"
-  echo "8. 📦 Revisar archivos historial de git"
-  echo "9. 🔁 Editar Commits históricos  "
-  echo "10. ❌ Eliminar commit actual"
-  echo "11. ❌ Cancelar Merge del REMOTO, GITHUB (luego usa git push -f 'la-rama' para restaurar)  ."
-  echo "12. ❌ Cancelar"
+  echo "  📝 COMMITS"
+  echo "  0. ✏️  Editar último commit"
+  echo "  1. 📋 Commit con editor (plantilla)"
+  echo "  2. ⚡ Commit rápido"
+  echo "  3. 🤖 Commit con IA (opencommit)"
+  echo "  4. 📦 Commit convencional (feat/fix/etc)"
+  echo ""
+  echo "  📊 VER INFORMACIÓN"
+  echo "  5. 📈 Estado actual"
+  echo "  6. 📜 Log (últimos 10)"
+  echo "  7. 🌳 Historial visual (tig)"
+  echo ""
+  echo "  🔧 EDITAR"
+  echo "  8. 📝 Editar plantilla de commit"
+  echo "  9. 🔄 Editar commits históricos"
+  echo ""
+  echo "  ⏮️  DESHACER"
+  echo "  10. ↩️  Deshacer último commit (sin perder cambios)"
+  echo "  11. 🔁 Descartar cambios locales (pull remoto)"
+  echo "  12. 🛑 Abortar merge en curso"
+  echo "  13. ❌ Cancelar"
   echo ""
   echo -n "Elige opción: "
   read option
 
   case $option in
-    0)
-      CommitEditar
-      ;;
-    1)
-      gitcommit
-      ;;
+    0) CommitEditar ;;
+    1) gitcommit ;;
     2)
-      echo "💬 Contexto adicional (opcional, Enter para saltar):"
+      echo -n "💬 Contexto (Enter para saltar): "
       read context
-      if [ -n "$context" ]; then
-        gitquick "$context"
-      else
-        gitquick
-      fi
+      [ -n "$context" ] && gitquick "$context" || gitquick
       ;;
-    3)
-      gitai
-      ;;
-    4)
-      gitconv
-      ;;
-    5)
-      git status -sb
-      ;;
-    6)
-      git log --oneline --graph --decorate --all -10
-      ;;
-    7)
+    3) aicommit ;;
+    4) gitconv ;;
+    5) git status -sb ;;
+    6) git log --oneline --graph --decorate --all -10 ;;
+    7) tig ;;
+    8)
       local template_file="$HOME/commit-template.txt"
-      if [ ! -f "$template_file" ]; then
-        mkdir -p "$HOME/.config/git"
-        cat > "$template_file" << 'TEMPLATE'
-feat(arch 󰣇): 󰊢 Best Linux 🐧 Setup
-
-# Agrega contexto adicional aquí:
-# -
-# -
-# -
-
-# Recuerda usar 'gitflow' para commits más complejos
-TEMPLATE
-      fi
+      mkdir -p "$HOME/.config/git"
       ${EDITOR:-nano} "$template_file"
       echo "✅ Plantilla actualizada"
       ;;
-    8)
-      tig
-      ;;
-      #
-    9)
-      CommitsHistorial
-      ;;
+    9) CommitsHistorial ;;
     10)
+      echo "↩️  Deshaciendo último commit..."
       git reset --soft HEAD~1
+      echo "✅ Cambios preservados en staging"
       ;;
     11)
-      git merge --abort
+      echo "🔁 Sincronizando con remoto..."
+      git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+      git pull
+      echo "✅ Sincronizado"
       ;;
     12)
-      echo "❌ Cancelado"
+      echo "❌ Abortando merge..."
+      git merge --abort
+      echo "✅ Merge cancelado"
       ;;
-    *)
-      echo "❌ Opción inválida"
-      ;;
+    13) echo "❌ Cancelado" ;;
+    *) echo "❌ Opción inválida" ;;
   esac
 }
 
