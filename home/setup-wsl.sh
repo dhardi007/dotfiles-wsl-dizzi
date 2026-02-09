@@ -224,7 +224,7 @@ echo -e "${GREEN}🤖 Instalando herramientas de IA...${NC}"
 # tgpt
 if ! run_as_user "command -v tgpt" &>/dev/null; then
   echo -e "${YELLOW}   Instalando tgpt...${NC}"
-  run_as_user "yay -S --needed --noconfirm opencommit tgpt-git ollama-bin opencode tabnine claude-code" &&
+  run_as_user "yay -S --needed --noconfirm opencommit tgpt-git ollama-bin opencode tabnine claude-code clawdbot" &&
     echo -e "${GREEN}   ✓ tgpt instalado${NC}" ||
     echo -e "${YELLOW}   ⚠️ tgpt falló${NC}"
 else

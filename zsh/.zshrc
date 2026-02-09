@@ -797,3 +797,6 @@ fi
 if [ -f ~/.api-keys.sh ]; then
     source ~/.api-keys.sh
 fi
+
+# OpenClaw Completion
+source "/root/.openclaw/completions/openclaw.zsh"
