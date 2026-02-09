@@ -169,8 +169,80 @@ else {
   Write-Host "⚠️ No se encontró el archivo .ptb en $PT_SEARCH_PATH" -ForegroundColor $E_YELLOW
 }
 
+# ═══════════════════════════════════════════════════════════
+# 6. HERRAMIENTAS IA
+# ═══════════════════════════════════════════════════════════
+Write-Host "`n🤖 Instalando herramientas de IA..." -ForegroundColor $E_GREEN
+
+# Verificar Node.js
+if (!(Get-Command node -ErrorAction SilentlyContinue)) {
+  Write-Host "   Instalando Node.js..." -ForegroundColor $E_YELLOW
+  winget install --id OpenJS.NodeJS --silent --accept-package-agreements --accept-source-agreements
+  # Refrescar PATH
+  $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+# Claude Code
+Write-Host "   Verificando Claude Code..." -ForegroundColor $E_CYAN
+if (!(Test-Path "$HOME\.local\bin\claude.exe")) {
+  Write-Host "   Instalando Claude Code..." -ForegroundColor $E_YELLOW
+  irm https://claude.ai/install.ps1 | iex
+}
+# Agregar Claude al PATH si no está
+$claudePath = "$HOME\.local\bin"
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($userPath -notlike "*$claudePath*") {
+  [Environment]::SetEnvironmentVariable("Path", "$userPath;$claudePath", "User")
+  Write-Host "   ✅ Claude agregado al PATH" -ForegroundColor $E_CYAN
+}
+
+# OpenClaw
+Write-Host "   Verificando OpenClaw..." -ForegroundColor $E_CYAN
+if (!(Get-Command openclaw -ErrorAction SilentlyContinue)) {
+  Write-Host "   Instalando OpenClaw..." -ForegroundColor $E_YELLOW
+  npm install -g openclaw
+  Write-Host "   ✅ OpenClaw instalado" -ForegroundColor $E_CYAN
+} else {
+  Write-Host "   ✅ OpenClaw ya instalado" -ForegroundColor $E_CYAN
+}
+
+# Gemini CLI
+Write-Host "   Verificando Gemini CLI..." -ForegroundColor $E_CYAN
+if (!(Get-Command gemini -ErrorAction SilentlyContinue)) {
+  Write-Host "   Instalando Gemini CLI..." -ForegroundColor $E_YELLOW
+  npm install -g @google/gemini-cli
+  Write-Host "   ✅ Gemini CLI instalado" -ForegroundColor $E_CYAN
+} else {
+  Write-Host "   ✅ Gemini CLI ya instalado" -ForegroundColor $E_CYAN
+}
+
+# OpenCommit
+Write-Host "   Verificando OpenCommit..." -ForegroundColor $E_CYAN
+if (!(Get-Command oco -ErrorAction SilentlyContinue)) {
+  Write-Host "   Instalando OpenCommit..." -ForegroundColor $E_YELLOW
+  npm install -g opencommit
+  Write-Host "   ✅ OpenCommit instalado" -ForegroundColor $E_CYAN
+
+  # Configurar para Ollama si está disponible
+  try {
+    $ollamaTest = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -TimeoutSec 2 -ErrorAction Stop
+    Write-Host "   ⚡ Configurando para Ollama..." -ForegroundColor $E_BLUE
+    oco config set OCO_AI_PROVIDER=ollama
+    oco config set OCO_MODEL=qwen3-vl:235b-cloud
+    oco config set OCO_API_URL=http://localhost:11434
+    oco config set OCO_LANGUAGE=es
+    Write-Host "   ✅ Configurado para Ollama" -ForegroundColor $E_CYAN
+  } catch {
+    Write-Host "   ⚠️ Ollama no detectado. Configura manualmente: oco config set OCO_API_KEY=sk-tu-key" -ForegroundColor $E_YELLOW
+  }
+} else {
+  Write-Host "   ✅ OpenCommit ya instalado" -ForegroundColor $E_CYAN
+}
+
+Write-Host "✅ Herramientas IA instaladas" -ForegroundColor $E_GREEN
+
 Write-Host "`n✨ Setup Completado! Reinicia tu terminal para activar todo." -ForegroundColor $E_BLUE
-# En tu setup-paraWindowsPWSH.ps1, agrega después de línea 67:
+#
 
 # 5.5. CREAR .fdignore GLOBAL
 Write-Host "`n📝 Creando .fdignore global..." -ForegroundColor $E_GREEN
