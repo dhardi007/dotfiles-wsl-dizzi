@@ -1,7 +1,6 @@
 OCO_GITPUSH=false
 OCO_MODEL=deepseek-v3.1:671b-cloud
 OCO_API_URL=http://172.24.0.1:11434/api/chat
-OCO_API_KEY=undefined
 OCO_API_CUSTOM_HEADERS=undefined
 OCO_AI_PROVIDER=ollama
 OCO_TOKENS_MAX_INPUT=12000
