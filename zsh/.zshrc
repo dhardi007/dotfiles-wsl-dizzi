@@ -800,3 +800,6 @@ fi
 
 # OpenClaw Completion
 source "/root/.openclaw/completions/openclaw.zsh"
+# Config para Color Picker oklch-color-picker-wsl
+export LIBGL_ALWAYS_SOFTWARE=1
+LIBGL_ALWAYS_SOFTWARE=1         

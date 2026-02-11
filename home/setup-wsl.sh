@@ -185,7 +185,7 @@ fi
 # 4. PAQUETES AUR
 # ═══════════════════════════════════════════════════════════
 echo -e "${GREEN}📦 Instalando paquetes AUR...${NC}"
-run_as_user "yay -S --needed --noconfirm pokemon-colorscripts-git win32yank-bin" || {
+run_as_user "yay -S --needed --noconfirm  wl-clipboard pokemon-colorscripts-git win32yank-bin" || {
   echo -e "${YELLOW}⚠️ Algunos paquetes AUR fallaron${NC}"
 }
 
