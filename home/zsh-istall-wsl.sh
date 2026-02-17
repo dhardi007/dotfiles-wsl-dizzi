@@ -10,6 +10,10 @@ NC='\033[0m'
 
 echo -e "${YELLOW}🔧 Reparando Zsh con dotfiles...${NC}"
 
+#  0. Limpiar Oh My Zsh si existe
+rm -rf ~/.oh-my-zsh
+rm -rf ~/dotfiles-dizzi/zsh/.oh-my-zsh
+
 # 1. Instalar Oh My Zsh si no existe
 if [[ ! -d ~/.oh-my-zsh ]]; then
   echo -e "${GREEN}Instalando Oh My Zsh...${NC}"
